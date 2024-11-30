@@ -5,7 +5,8 @@ const NavigationArrows: React.FC<NavigationArrowsProps> = ({
   onPrev,
   onNext,
   showPrev,
-  showNext
+  showNext,
+  // ...props
 }) => {
   return (
     <>

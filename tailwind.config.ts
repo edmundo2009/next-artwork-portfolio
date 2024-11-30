@@ -10,12 +10,12 @@ export default {
   theme: {
     extend: {
       // Ensure all color variants are included
-      textColor: ({ theme }) => ({
-        ...theme('colors'),
-      }),
-      backgroundColor: ({ theme }) => ({
-        ...theme('colors'),
-      }),
+      // textColor: ({ theme }) => ({
+      //   ...theme('colors'),
+      // }),
+      // backgroundColor: ({ theme }) => ({
+      //   ...theme('colors'),
+      // }),
       opacity: {
         '0': '0',
         '10': '0.1',

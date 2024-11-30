@@ -1,7 +1,8 @@
 'use client';
-// App.tsx
+// app/page.tsx
 import React, { useState } from 'react';
-import { mockArtworks, getUniqueYears } from '@/data/artwork-description';
+import { mockArtworks } from '@/data/artwork-description';
+import { getUniqueYears } from '@/utils/years';
 import { useArtworks } from '@/hooks/useArtworks';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import ArtworkDisplay from '@/components/ArtworkDisplay';
@@ -19,7 +20,7 @@ const ArtworkGallery: React.FC = () => {
     hasPrev,
     hasNext
   } = useArtworks(selectedYear);
-  useKeyboardNavigation(handlePrev, handleNext);
+  useKeyboardNavigation(handlePrev, handleNext, isArtworkManagerOpen);
 
   const years = getUniqueYears(mockArtworks);
 
@@ -58,6 +59,7 @@ const ArtworkGallery: React.FC = () => {
         onNext={handleNext}
         showPrev={hasPrev}
         showNext={hasNext}
+        // isArtworkManagerOpen
       />
 
       {/* Artwork Display with Dynamic Type */}

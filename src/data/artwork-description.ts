@@ -1,116 +1,52 @@
-// data/artwork-description.ts
 import { Artwork, ArtworkDisplayType } from '@/types/artwork';
-
-export const mockArtworks: Artwork[] = [
-
-  {
-    id: '1',
-    year: 2023,
-    imageUrl: '/artwork/2023/2023-1.jpg',
-    title: 'Artwork TITLE 1',
-    type: 2, //1: FullScreen, 2: SplitScreenTextLeft, 3: FullScreenWithOverlay
-    descriptionPath: '/descriptions/3.md', // only required for 2: SplitScreenTextLeft, 3: FullScreenWithOverlay
-    // optional for everything from here onwards, 
-    // if not provided defaults to @/components/ArtworkDisplay.tsx
-    // style: {
-    //   textPlacement: 'top-left',
-    //   textColor: 'green', //'green-500',
-    //   bgOpacity: 0.1,
-    //   typography: {
-    //     title: {
-    //       size: '4xl',
-    //       weight: 'bold',
-    //       marginBottom: 3
-    //     },
-    //     description: {
-    //       size: 'base',
-    //       weight: 'bold',
-    //       lineHeight: 'relaxed',
-    //       marginBottom: 2
-    //     }
-    //   },
-    //   spacing: {
-    //     padding: {
-    //       x: 4,
-    //       y: 4
-    //     },
-    //     margin: {
-    //       x: 4
-    //     }
-    //   }
-    // },
-  },
   
+export const mockArtworks: Artwork[] = [
   {
-    id: '2',
-    year: 2023,
-    imageUrl: '/artwork/2023/2023-2.jpg',
-    title: 'Artwork 2',
-    type: 2, // type: ArtworkDisplayType.SplitScreenTextLeft,
-    descriptionPath: '/descriptions/2.md'
+    "id": "artwork-1732973305795",
+    "year": 2024,
+    "imageUrl": "/artwork/2024/2024-1732973305773.png",
+    "title": "New Artwork mmm",
+    "type": 1,
+    "descriptionPath": "/descriptions/new-artwork-mmm.md"
   },
   {
-    id: '3',
-    year: 2022,
-    imageUrl: '/artwork/2022/2022-1.png',
-    title: 'Artwork 3',
-    type: 1, // type: ArtworkDisplayType.FullScreen,
-    // no descriptionPath since 1: FullScreen doesn't require a description
-    style: {
-      textPlacement: 'center',
-      textColor: 'green',
-      bgOpacity: 0.9,
-      typography: {
-        title: {
-          size: '4xl',
-          weight: 'bold',
-          marginBottom: 6
-        },
-      },
-      spacing: {
-        padding: {
-          x: 2,
-          y: 2
-        },
-        margin: {
-          x: 2
-        }
-      }
-    },
-  },
-
-  {
-    id: '4',
-    year: 2022,
-    imageUrl: '/artwork/2022/2022-2.png',
-    title: 'Artwork 4',
-    type: 3, //ArtworkDisplayType.FullScreenWithRawText
-    descriptionPath: '/descriptions/4.md',
-    style: {
-      textPlacement: 'top-right',
-      textColor: '',
-      bgOpacity: 0,
-    },
+    "id": "artwork-1732974273974",
+    "year": 2024,
+    "imageUrl": "/artwork/2024/2024-1732974273940.png",
+    "title": "New Artwork stage",
+    "type": 2,
+    "descriptionPath": "/descriptions/new-artwork-stage.md"
   },
   {
-    id: '5',
-    year: 2022,
-    imageUrl: '/artwork/2022/2022-3.jpg',
-    title: 'Artwork EEE',
-    type: 3,
-    descriptionPath: '/descriptions/4.md'
+    "id": "artwork-1732983267714",
+    "year": 2023,
+    "imageUrl": "/artwork/2023/2023-1732983267693.jpg",
+    "title": "test md",
+    "type": 2,
+    "descriptionPath": "/descriptions/test-md.md"
   },
   {
-    id: '6',
-    year: 2021,
-    imageUrl: '/artwork/2021//2021-1.png',
-    title: 'Artwork AAA',
-    type: ArtworkDisplayType.FullScreen,
-    // descriptionPath: '/descriptions/4.md'
+    "id": "flux dev 1",
+    "year": 2024,
+    "imageUrl": "/artwork/2024/2024-1732985727688.jpg",
+    "title": "aaaaaaaaaa",
+    "type": 2,
+    "descriptionPath": "/descriptions/aaaaaaaaaa.md"
   },
+  {
+    "id": "全国カラオケ大会",
+    "year": 2024,
+    "imageUrl": "/artwork/2024/2024-1732986231536.png",
+    "title": "karaoke",
+    "type": 2,
+    "descriptionPath": "/descriptions/karaoke.md"
+  },
+  {
+    "id": "utaChamp",
+    "year": 2024,
+    "imageUrl": "/artwork/2024/utaChamp.png",
+    "title": "uta",
+    "type": 2,
+    "descriptionPath": "/descriptions/uta.md"
+  }
 ];
-
-export const getUniqueYears = (artworks: Artwork[]): number[] => {
-  const years = artworks.map(artwork => artwork.year);
-  return [...new Set(years)].sort((a, b) => b - a);
-};

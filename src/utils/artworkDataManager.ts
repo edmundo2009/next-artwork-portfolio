@@ -67,19 +67,19 @@ class ArtworkDataManager {
     }
   }
 
-  static async saveImageFile(file: File, year: number): Promise<string> {
+  static async saveImageFile(file: File, year: number, originalFilename?: string): Promise<string> {
     try {
-      // Preserve the original filename when saving
-      const originalFilename = file.name;
-      const filePath = `/artwork/${year}/${originalFilename}`;
+      // Use the provided originalFilename or fallback to the uploaded file's name
+      const filename = originalFilename || file.name;
+      const filePath = `/artwork/${year}/${filename}`;
 
       const formData = new FormData();
       formData.append('file', file);
       formData.append('year', year.toString());
+      formData.append('filename', filename);
 
       const { path } = await this.apiRequest('upload-image', formData);
       return filePath;
-      // return path;
     } catch (error) {
       console.error('Error saving image file:', error);
       return '';

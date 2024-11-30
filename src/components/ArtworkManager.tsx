@@ -128,13 +128,13 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose }) => {
 
     try {
       // 1. Save the image file if a new file is uploaded
-      let imageUrl = currentArtwork.file
-        ? `/artwork/${currentArtwork.year}/${currentArtwork.file.name}`
-        : currentArtwork.imageUrl;
-        if (currentArtwork.file) {
+      let imageUrl = currentArtwork.imageUrl;
+      if (currentArtwork.file) {
+        const originalFilename = currentArtwork.file.name;
         imageUrl = await ArtworkDataManager.saveImageFile(
           currentArtwork.file,
-          currentArtwork.year
+          currentArtwork.year,
+          originalFilename  // Pass the original filename
         );
       }
 
@@ -147,15 +147,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose }) => {
         );
       }
 
-      // 3. Prepare artwork object
-      // const updatedArtwork: Artwork = {
-      //   id: isNewArtwork ? `artwork-${Date.now()}` : currentArtwork.id!,
-      //   year: currentArtwork.year,
-      //   imageUrl: imageUrl,
-      //   title: currentArtwork.title,
-      //   type: currentArtwork.type,
-      //   descriptionPath: descriptionPath
-      // };
+      // 3. Update artwork object
       const updatedArtwork: Artwork = {
         id: isNewArtwork
           ? (currentArtwork.file

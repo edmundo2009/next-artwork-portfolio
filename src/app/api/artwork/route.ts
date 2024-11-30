@@ -1,4 +1,5 @@
 // src/app/api/artwork/route.ts
+// server-side API route
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
@@ -98,7 +99,9 @@ export async function POST(request: NextRequest) {
         const yearDir = path.join(PUBLIC_ARTWORK_DIR, year);
         await fs.mkdir(yearDir, { recursive: true });
 
-        const filename = `${year}-${Date.now()}${path.extname(file.name)}`;
+        // const filename = `${year}-${Date.now()}${path.extname(file.name)}`;
+        //  server-side API route for image upload
+        const filename = data.get('filename') as string;
         const newPath = path.join(yearDir, filename);
 
         const arrayBuffer = await file.arrayBuffer();

@@ -47,7 +47,7 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
     [ArtworkDisplayType.SplitScreenTextLeft]: {//2nd default style
       textPlacement: 'top-left',
       textColor: 'black',
-      bgOpacity: 0.2,
+      bgOpacity: 0,
       typography: {
         title: {
           size: '3xl',
@@ -58,7 +58,7 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
       spacing: {
         padding: {
           x: 4,
-          y: 8
+          y: 1
         }
       }
     },

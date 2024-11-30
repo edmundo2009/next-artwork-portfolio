@@ -67,6 +67,7 @@ export interface FloatingMenuProps {
   years: number[];
   selectedYear: number | null;
   onYearSelect: (year: number | null) => void;
+  onAdminAccess: () => void; // New prop for admin access
 }
 
 export interface NavigationArrowsProps {

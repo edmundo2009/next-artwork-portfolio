@@ -2,7 +2,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FloatingMenuProps } from '@/types/artwork';
 
-export const FloatingMenu: React.FC<FloatingMenuProps> = ({ years, selectedYear, onYearSelect, onAdminAccess }) => {
+export const FloatingMenu: React.FC<FloatingMenuProps> = ({ years, selectedYear, onYearSelect, 
+  // onAdminAccess 
+  }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -37,33 +39,18 @@ export const FloatingMenu: React.FC<FloatingMenuProps> = ({ years, selectedYear,
     }, 300);
   };
 
-  // const handleMouseMove = (e: React.MouseEvent) => {
-  //   // Prevent closing if mouse is still within the menu area
-  //   if (timeoutRef.current) {
-  //     clearTimeout(timeoutRef.current);
-  //     timeoutRef.current = null;
+
+  // // Updated button click handler
+  // const handleButtonClick = (e: React.MouseEvent) => {
+  //   // Check if Ctrl key (or Command key on Mac) is pressed
+  //   if (e.ctrlKey || e.metaKey) {
+  //     onAdminAccess();
+  //     return;
   //   }
   // };
-
-  // Updated button click handler
-  const handleButtonClick = (e: React.MouseEvent) => {
-    // Check if Ctrl key (or Command key on Mac) is pressed
-    if (e.ctrlKey || e.metaKey) {
-      onAdminAccess();
-      return;
-    }
-  };
   
   const handleYearClick = (e: React.MouseEvent, year: number | null) => {
     e.preventDefault();
-
-    // // Check if Ctrl key (or Command key on Mac) is pressed
-    // if (e.ctrlKey || e.metaKey) {
-    //   // // e.preventDefault(); // Prevent default behavior
-    //   // console.log('Admin access triggered'); // Add logging
-    //   onAdminAccess(); // Call the admin access function
-    //   return;
-    // }
     
     onYearSelect(selectedYear === year ? null : year);
 
@@ -114,7 +101,7 @@ export const FloatingMenu: React.FC<FloatingMenuProps> = ({ years, selectedYear,
     >
       <button
         ref={buttonRef}
-        onClick={handleButtonClick}
+        // onClick={handleButtonClick}
         onMouseEnter={handleMouseEnter}
         style={{ minWidth: menuWidth ? `${menuWidth}px` : 'auto' }}
         className="flex items-center justify-center gap-2 px-3 py-2 

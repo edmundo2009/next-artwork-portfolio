@@ -9,21 +9,23 @@ import ArtworkDisplay from '@/components/ArtworkDisplay';
 import NavigationArrows from '@/components/NavigationArrows';
 import FloatingMenu from '@/components/FloatingMenu';
 import ArtworkManager from '@/components/ArtworkManager';
-import AdminAccessModal from '@/components/AdminAccessModal';
+// import AdminAccessModal from '@/components/AdminAccessModal';
 
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
-// const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
-if (!ADMIN_PASSWORD) {
-  console.error('ADMIN_PASSWORD is not set in environment variables');
-}
+// const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+// // const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
+// if (!ADMIN_PASSWORD) {
+//   console.error('ADMIN_PASSWORD is not set in environment variables');
+// }
 
 
 const ArtworkGallery: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [isArtworkManagerOpen, setIsArtworkManagerOpen] = useState(false);
-  const [isAdminAccessModalOpen, setIsAdminAccessModalOpen] = useState(false);
-  const [isAdminAccessGranted, setIsAdminAccessGranted] = useState(false);
+  // const [isAdminAccessModalOpen, setIsAdminAccessModalOpen] = useState(false);
+  // const [isAdminAccessGranted, setIsAdminAccessGranted] = useState(false);
 
+  const isAdminAccessGranted = true
+  
   const {
     currentArtwork,
     handlePrev,
@@ -36,24 +38,24 @@ const ArtworkGallery: React.FC = () => {
 
   const years = getUniqueYears(mockArtworks);
 
-  // Handle admin access verification
-  const handleAdminAccess = () => {
-    setIsAdminAccessModalOpen(true);
-  };
+  // // Handle admin access verification
+  // const handleAdminAccess = () => {
+  //   setIsAdminAccessModalOpen(true);
+  // };
 
-  // Verify admin password
-  const verifyAdminPassword = (password: string): boolean => {
-    if (password === ADMIN_PASSWORD) {
-      setIsAdminAccessGranted(true);
-      return true;
-    }
-    return false;
-  };
+  // // Verify admin password
+  // const verifyAdminPassword = (password: string): boolean => {
+  //   if (password === ADMIN_PASSWORD) {
+  //     setIsAdminAccessGranted(true);
+  //     return true;
+  //   }
+  //   return false;
+  // };
 
-  // Close admin access modal
-  const handleCloseAdminAccessModal = () => {
-    setIsAdminAccessModalOpen(false);
-  };
+  // // Close admin access modal
+  // const handleCloseAdminAccessModal = () => {
+  //   setIsAdminAccessModalOpen(false);
+  // };
 
   if (!currentArtwork) return null;
 
@@ -75,18 +77,18 @@ const ArtworkGallery: React.FC = () => {
       )}
 
       {/* Admin Access Modal */}
-      <AdminAccessModal
+      {/* <AdminAccessModal
         isOpen={isAdminAccessModalOpen}
         onClose={handleCloseAdminAccessModal}
         onAdminLogin={verifyAdminPassword}
-      />
+      /> */}
 
       {/* Floating Menu for Year Selection */}
       <FloatingMenu
         years={years}
         selectedYear={selectedYear}
         onYearSelect={setSelectedYear}
-        onAdminAccess={handleAdminAccess}
+        // onAdminAccess={handleAdminAccess}
       />
 
       {/* Navigation Arrows */}

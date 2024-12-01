@@ -88,24 +88,36 @@ export async function POST(request: NextRequest) {
 
     case 'upload-image':
       try {
-        const file = data.get('file') as File;
-        const year = data.get('year') as string;
 
-        if (!file) {
-          return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+
+        const files = data.getAll('files') as File[];
+        const year = data.get('year') as string;
+        const title = data.get('title') as string;
+
+        if (!files || files.length === 0) {
+          return NextResponse.json({ error: 'No files provided' }, { status: 400 });
         }
 
         const yearDir = path.join(PUBLIC_ARTWORK_DIR, year);
         await fs.mkdir(yearDir, { recursive: true });
 
-        //  server-side API route for image upload
-        const filename = data.get('filename') as string;
-        const newPath = path.join(yearDir, filename);
 
-        const arrayBuffer = await file.arrayBuffer();
-        await fs.writeFile(newPath, Buffer.from(arrayBuffer));
+        const titleDir = path.join(yearDir, title);
+        await fs.mkdir(titleDir, { recursive: true });
 
-        return NextResponse.json({ path: `/artwork/${year}/${filename}` }, { status: 200 });
+        const imageUrls = await Promise.all(files.map(async (file, index) => {
+          const filename = file.name;
+          const newPath = path.join(titleDir, filename);
+
+          const arrayBuffer = await file.arrayBuffer();
+          await fs.writeFile(newPath, Buffer.from(arrayBuffer));
+
+          return `/artwork/${year}/${title}/${filename}`;
+        }));
+
+        // return NextResponse.json({ path: `/artwork/${year}/${filename}` }, { status: 200 });
+        return NextResponse.json({ paths: imageUrls }, { status: 200 });
+
       } catch (error) {
         console.error('Error saving image file:', error);
         return NextResponse.json({ error: 'Failed to save image file' }, { status: 500 });
@@ -132,36 +144,42 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to save description file' }, { status: 500 });
       }
 
-    case 'delete-files':
-      try {
-        const imageUrl = data.get('imageUrl') as string;
-        const descriptionPath = data.get('descriptionPath') as string;
 
-        if (imageUrl) {
-          const imagePath = path.join(projectRoot, 'public', imageUrl);
+  case 'delete-files':
+    try {
+      const imageUrls = data.getAll('imageUrls') as string[];
+      const descriptionPath = data.get('descriptionPath') as string;
+
+      if (imageUrls) {
+        const folderPath = path.dirname(imageUrls[0]);
+        imageUrls.forEach(async (url) => {
+          const imagePath = path.join(projectRoot, 'public', url);
           try {
             await fs.unlink(imagePath);
           } catch (unlinkErr) {
             console.error('Error deleting image:', unlinkErr);
           }
+        });
+        try {
+          await fs.rmdir(path.join(projectRoot, 'public', folderPath));
+        } catch (rmdirErr) {
+          console.error('Error deleting folder:', rmdirErr);
         }
-
-        if (descriptionPath) {
-          const descPath = path.join(projectRoot, 'public', descriptionPath);
-          try {
-            await fs.unlink(descPath);
-          } catch (unlinkErr) {
-            console.error('Error deleting description:', unlinkErr);
-          }
-        }
-
-        return NextResponse.json({ success: true }, { status: 200 });
-      } catch (error) {
-        console.error('Error during file deletion:', error);
-        return NextResponse.json({ error: 'Failed to delete files' }, { status: 500 });
       }
 
-    default:
-      return NextResponse.json({ error: 'Invalid operation' }, { status: 400 });
+      if (descriptionPath) {
+        const descPath = path.join(projectRoot, 'public', descriptionPath);
+        try {
+          await fs.unlink(descPath);
+        } catch (unlinkErr) {
+          console.error('Error deleting description:', unlinkErr);
+        }
+      }
+
+      return NextResponse.json({ success: true }, { status: 200 });
+    } catch (error) {
+      console.error('Error during file deletion:', error);
+      return NextResponse.json({ error: 'Failed to delete files' }, { status: 500 });
+    }
   }
 }

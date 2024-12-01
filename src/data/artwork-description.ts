@@ -8,5 +8,17 @@ export const mockArtworks: Artwork[] = [
     "title": "uta",
     "type": 3,
     "descriptionPath": "/descriptions/uta.md"
+  },
+  {
+    "id": "artwork-1733088867565",
+    "year": 2024,
+    "imageUrl": [
+      "/artwork/2024/New Artwork/mmm-karaoke-orig.png",
+      "/artwork/2024/New Artwork/mmm-Line.jpg",
+      "/artwork/2024/New Artwork/mmm2.png"
+    ],
+    "title": "New Artwork",
+    "type": 1,
+    "descriptionPath": "/descriptions/new-artwork.md"
   }
 ];

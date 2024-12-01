@@ -5,29 +5,64 @@ import remarkGfm from 'remark-gfm';
 import { Artwork, ArtworkDisplayType, ArtworkStyle } from '@/types/artwork';
 import TextOverlay from './TextOverlay';
 import Image from 'next/image';
+
 interface ArtworkDisplayProps {
   artwork: Artwork;
 }
 
 const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
   const [markdownContent, setMarkdownContent] = useState<string>('');
-  
-  // Default width/height for full-screen and other types
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Handle both string and string[] types for imageUrl
+  const imageUrls = Array.isArray(artwork.imageUrl) 
+    ? artwork.imageUrl 
+    : [artwork.imageUrl];
+
   const defaultImageProps = {
     fill: true,
-    objectFit: "contain",
+    objectFit: "contain" as const,
     alt: artwork.title
   };
 
-  // Adjust image props based on display type
-  const imageProps = artwork.type === ArtworkDisplayType.SplitScreenTextLeft
-    ? {
-      ...defaultImageProps,
+  const handleImageClick = (index: number) => {
+    setSelectedImageIndex(index);
+  };
+
+  const renderImages = () => {
+    if (imageUrls.length === 1) {
+      return (
+        <div className="relative w-full h-full">
+          <Image
+            src={imageUrls[0]}
+            {...defaultImageProps}
+            priority
+          />
+        </div>
+      );
     }
-    : {
-      ...defaultImageProps,
-    };
-  
+
+    return (
+      <div className="grid grid-cols-3 gap-4 w-full h-full p-4">
+        {imageUrls.map((url, index) => (
+          <div 
+            key={index}
+            className={`relative w-full h-[calc(100vh-2rem)] cursor-pointer ${
+              selectedImageIndex === index ? 'ring-2 ring-blue-500' : ''
+            }`}
+            onClick={() => handleImageClick(index)}
+          >
+            <Image
+              src={url}
+              {...defaultImageProps}
+              priority={index === 0}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   useEffect(() => {
     if (artwork.descriptionPath) {
       fetch(artwork.descriptionPath)
@@ -40,9 +75,8 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
     }
   }, [artwork.descriptionPath]);
 
-  // Comprehensive default styles with fallback options
   const defaultStyles: { [key in ArtworkDisplayType]: ArtworkStyle } = {
-    [ArtworkDisplayType.FullScreen]: {//1st default style
+    [ArtworkDisplayType.FullScreen]: {
       textPlacement: 'bottom-left',
       textColor: 'white',
       bgOpacity: 0.9,
@@ -60,7 +94,7 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
         }
       }
     },
-    [ArtworkDisplayType.FullScreenWithOverlay]: {//2nd default style
+    [ArtworkDisplayType.FullScreenWithOverlay]: {
       textPlacement: 'bottom-left',
       textColor: 'black',
       bgOpacity: 0.1,
@@ -87,7 +121,7 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
         }
       }
     },
-    [ArtworkDisplayType.SplitScreenTextLeft]: {//3rd default style
+    [ArtworkDisplayType.SplitScreenTextLeft]: {
       textPlacement: 'top-left',
       textColor: 'black',
       bgOpacity: 0,
@@ -107,14 +141,11 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
     },
   };
 
-  // Merge default styles with artwork-specific styles
   const style: ArtworkStyle = {
     ...defaultStyles[artwork.type],
     ...artwork.style
   };
 
-
-  // Markdown rendering components for custom styling
   const MarkdownComponents = {
     h1: (props: React.ComponentProps<'h1'>) => <h1 className="text-3xl font-bold mb-4" {...props} />,
     h2: (props: React.ComponentProps<'h2'>) => <h2 className="text-2xl font-semibold mb-3" {...props} />,
@@ -131,11 +162,7 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
 
   const renderFullScreen = () => (
     <div className="w-full h-full relative">
-      <Image
-        src={artwork.imageUrl}
-        {...imageProps}
-        className="w-full h-full object-contain"
-      />
+      {renderImages()}
       <TextOverlay style={style}>
         <h2 className="text-2xl font-bold">{artwork.title} ({artwork.year})</h2>
       </TextOverlay>
@@ -144,12 +171,7 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
 
   const renderFullScreenWithOverlay = () => (
     <div className="w-full h-full relative">
-      <Image
-        src={artwork.imageUrl}
-        {...imageProps}
-        className="w-full h-full object-contain"
-        // className="w-full h-full object-cover"
-      />
+      {renderImages()}
       <TextOverlay style={style}>
         <div>
           <h2>{artwork.title}</h2>
@@ -169,8 +191,6 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
     </div>
   );
 
-  // const textWidthPercentage = artwork.textWidthPercentage || 50;
-  // const imageWidthPercentage = 100 - textWidthPercentage;
   const renderSplitScreenTextLeft = () => (
     <div className="flex w-full h-full">
       <div
@@ -196,13 +216,7 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
         className="relative"
         style={{ width: `${100 - (artwork.textWidthPercentage || 50)}%` }}
       >
-        <Image
-          src={artwork.imageUrl}
-          // alt={artwork.title}
-          {...imageProps}
-          // layout="fill" //layout="fill" and objectFit="contain" for responsive image display
-          objectFit="contain"
-        />
+        {renderImages()}
       </div>
     </div>
   );

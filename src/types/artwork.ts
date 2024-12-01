@@ -10,7 +10,8 @@ export enum ArtworkDisplayType {
 export interface Artwork {
   id: string;
   year: number;
-  imageUrl: string;
+  // imageUrl: string;
+  imageUrl: string | string[]; // Use a union type to handle single or multiple URLs
   title: string;
   type: ArtworkDisplayType;
   descriptionPath?: string; // Path to markdown description

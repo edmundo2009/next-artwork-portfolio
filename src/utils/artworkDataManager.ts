@@ -67,22 +67,18 @@ class ArtworkDataManager {
     }
   }
 
-  static async saveImageFile(file: File, year: number, originalFilename?: string): Promise<string> {
+  static async saveImageFile(files: File[], year: number, title: string): Promise<string[]> {
     try {
-      // Use the provided originalFilename or fallback to the uploaded file's name
-      const filename = originalFilename || file.name;
-      const filePath = `/artwork/${year}/${filename}`;
-
       const formData = new FormData();
-      formData.append('file', file);
+      files.forEach(file => formData.append('files', file));
       formData.append('year', year.toString());
-      formData.append('filename', filename);
+      formData.append('title', title);
 
-      await this.apiRequest('upload-image', formData);
-      return filePath;
+      const { paths } = await this.apiRequest('upload-image', formData);
+      return paths;
     } catch (error) {
       console.error('Error saving image file:', error);
-      return '';
+      return [];
     }
   }
 
@@ -110,19 +106,26 @@ class ArtworkDataManager {
     }
   }
 
+  static async saveArtwork(formData: FormData): Promise<void> {
+    const response = await this.apiRequest('save', formData);
+    if (!response.success) {
+      throw new Error('Failed to save artwork');
+    }
+  }
+
   static async deleteArtworkFiles(artwork: Artwork): Promise<void> {
     try {
-      const formData = new FormData();
-      if (artwork.imageUrl) {
-        formData.append('imageUrl', artwork.imageUrl);
+      const imageUrls = Array.isArray(artwork.imageUrl) ? artwork.imageUrl : [artwork.imageUrl];
+      for (const imageUrl of imageUrls) {
+        await this.apiRequest('deleteFile', { path: imageUrl });
       }
+      
       if (artwork.descriptionPath) {
-        formData.append('descriptionPath', artwork.descriptionPath);
+        await this.apiRequest('deleteFile', { path: artwork.descriptionPath });
       }
-
-      await this.apiRequest('delete-files', formData);
     } catch (error) {
       console.error('Error deleting artwork files:', error);
+      throw error;
     }
   }
 }

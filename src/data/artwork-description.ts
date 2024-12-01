@@ -1,14 +1,6 @@
-import { Artwork, ArtworkDisplayType } from '@/types/artwork';
+import { Artwork} from '@/types/artwork';
   
 export const mockArtworks: Artwork[] = [
-  {
-    "id": "artwork-1732983267714",
-    "year": 2023,
-    "imageUrl": "/artwork/2023/2023-1732983267693.jpg",
-    "title": "test md",
-    "type": 2,
-    "descriptionPath": "/descriptions/test-md.md"
-  },
   {
     "id": "utaChamp",
     "year": 2024,
@@ -16,5 +8,13 @@ export const mockArtworks: Artwork[] = [
     "title": "uta",
     "type": 2,
     "descriptionPath": "/descriptions/uta.md"
+  },
+  {
+    "id": "mmm2",
+    "year": 2024,
+    "imageUrl": "/artwork/2024/mmm2.png",
+    "title": "New Artwork 2",
+    "type": 2,
+    "descriptionPath": "/descriptions/new-artwork-2.md"
   }
 ];

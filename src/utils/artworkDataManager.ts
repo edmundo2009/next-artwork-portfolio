@@ -78,7 +78,7 @@ class ArtworkDataManager {
       formData.append('year', year.toString());
       formData.append('filename', filename);
 
-      const { path } = await this.apiRequest('upload-image', formData);
+      await this.apiRequest('upload-image', formData);
       return filePath;
     } catch (error) {
       console.error('Error saving image file:', error);

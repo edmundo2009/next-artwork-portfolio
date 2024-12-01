@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
-import { parse } from 'papaparse';
+// import { parse } from 'papaparse';
 import { Artwork } from '@/types/artwork';
 
 // Resolve paths relative to the project root
@@ -26,7 +26,7 @@ async function readArtworkData(): Promise<Artwork[]> {
 
 async function writeArtworkData(artworks: Artwork[]): Promise<boolean> {
   try {
-    const fileContent = `import { Artwork, ArtworkDisplayType } from '@/types/artwork';
+    const fileContent = `import { Artwork} from '@/types/artwork';
   
 export const mockArtworks: Artwork[] = ${JSON.stringify(artworks, null, 2)};`;
     await fs.writeFile(ARTWORK_DATA_PATH, fileContent);

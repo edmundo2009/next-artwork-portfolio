@@ -235,7 +235,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose }) => {
               key={artwork.id}
               onClick={() => handleEditArtwork(artwork)}
               className={`p-3 rounded cursor-pointer 
-              ${currentArtwork && (currentArtwork as any).id === artwork.id
+              ${currentArtwork && currentArtwork.id === artwork.id
                   ? 'bg-blue-100'
                   : 'hover:bg-gray-100'
                 }`}
@@ -335,7 +335,9 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose }) => {
                 {!isNewArtwork && (
                   <button
                     type="button"
-                    onClick={() => handleDelete((currentArtwork as any).id)}
+                    onClick={() => handleDelete(currentArtwork?.id ?? "")}
+                    // onClick={() => handleDelete(currentArtwork.id)}
+                    // onClick={() => handleDelete((currentArtwork as any).id)}
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                   >
                     Delete

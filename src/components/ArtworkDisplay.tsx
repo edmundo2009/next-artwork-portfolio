@@ -100,17 +100,17 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
 
   // Markdown rendering components for custom styling
   const MarkdownComponents = {
-    h1: ({ node, ...props }: React.ComponentProps<'h1'> & { node?: any }) => <h1 className="text-3xl font-bold mb-4" {...props} />,
-    h2: ({ node, ...props }: React.ComponentProps<'h2'> & { node?: any }) => <h2 className="text-2xl font-semibold mb-3" {...props} />,
-    h3: ({ node, ...props }: React.ComponentProps<'h3'> & { node?: any }) => <h3 className="text-xl font-semibold mb-2" {...props} />,
-    p: ({ node, ...props }: React.ComponentProps<'p'> & { node?: any }) => <p className="mb-4 leading-relaxed" {...props} />,
-    ul: ({ node, ...props }: React.ComponentProps<'ul'> & { node?: any }) => <ul className="list-disc pl-5 mb-4" {...props} />,
-    ol: ({ node, ...props }: React.ComponentProps<'ol'> & { node?: any }) => <ol className="list-decimal pl-5 mb-4" {...props} />,
-    li: ({ node, ...props }: React.ComponentProps<'li'> & { node?: any }) => <li className="mb-2" {...props} />,
-    a: ({ node, ...props }: React.ComponentProps<'a'> & { node?: any }) => <a className="text-blue-600 hover:underline" {...props} />,
-    strong: ({ node, ...props }: React.ComponentProps<'strong'> & { node?: any }) => <strong className="font-bold" {...props} />,
-    em: ({ node, ...props }: React.ComponentProps<'em'> & { node?: any }) => <em className="italic" {...props} />,
-    blockquote: ({ node, ...props }: React.ComponentProps<'blockquote'> & { node?: any }) => <blockquote className="border-l-4 border-gray-300 pl-4 italic" {...props} />,
+    h1: (props: React.ComponentProps<'h1'>) => <h1 className="text-3xl font-bold mb-4" {...props} />,
+    h2: (props: React.ComponentProps<'h2'>) => <h2 className="text-2xl font-semibold mb-3" {...props} />,
+    h3: (props: React.ComponentProps<'h3'>) => <h3 className="text-xl font-semibold mb-2" {...props} />,
+    p: (props: React.ComponentProps<'p'>) => <p className="mb-4 leading-relaxed" {...props} />,
+    ul: (props: React.ComponentProps<'ul'>) => <ul className="list-disc pl-5 mb-4" {...props} />,
+    ol: (props: React.ComponentProps<'ol'>) => <ol className="list-decimal pl-5 mb-4" {...props} />,
+    li: (props: React.ComponentProps<'li'>) => <li className="mb-2" {...props} />,
+    a: (props: React.ComponentProps<'a'>) => <a className="text-blue-600 hover:underline" {...props} />,
+    strong: (props: React.ComponentProps<'strong'>) => <strong className="font-bold" {...props} />,
+    em: (props: React.ComponentProps<'em'>) => <em className="italic" {...props} />,
+    blockquote: (props: React.ComponentProps<'blockquote'>) => <blockquote className="border-l-4 border-gray-300 pl-4 italic" {...props} />,
   };
 
   const renderFullScreen = () => (

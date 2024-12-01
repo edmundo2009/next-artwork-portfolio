@@ -37,13 +37,13 @@ export const FloatingMenu: React.FC<FloatingMenuProps> = ({ years, selectedYear,
     }, 300);
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    // Prevent closing if mouse is still within the menu area
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-  };
+  // const handleMouseMove = (e: React.MouseEvent) => {
+  //   // Prevent closing if mouse is still within the menu area
+  //   if (timeoutRef.current) {
+  //     clearTimeout(timeoutRef.current);
+  //     timeoutRef.current = null;
+  //   }
+  // };
 
   // Updated button click handler
   const handleButtonClick = (e: React.MouseEvent) => {
@@ -103,7 +103,7 @@ export const FloatingMenu: React.FC<FloatingMenuProps> = ({ years, selectedYear,
       className="absolute top-4 right-4 z-10"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onMouseMove={handleMouseMove}
+      // onMouseMove={handleMouseMove}
       // onMouseMove={(e) => {
       //   // Prevent closing if mouse is still within the menu area
       //   if (timeoutRef.current) {

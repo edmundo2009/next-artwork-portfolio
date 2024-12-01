@@ -3,7 +3,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
-// import { parse } from 'papaparse';
 import { Artwork } from '@/types/artwork';
 
 // Resolve paths relative to the project root
@@ -99,7 +98,6 @@ export async function POST(request: NextRequest) {
         const yearDir = path.join(PUBLIC_ARTWORK_DIR, year);
         await fs.mkdir(yearDir, { recursive: true });
 
-        // const filename = `${year}-${Date.now()}${path.extname(file.name)}`;
         //  server-side API route for image upload
         const filename = data.get('filename') as string;
         const newPath = path.join(yearDir, filename);

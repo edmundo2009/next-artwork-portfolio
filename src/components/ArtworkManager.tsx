@@ -9,6 +9,7 @@ import Image from 'next/image';
 
 interface ArtworkManagerProps {
   onClose: () => void;
+  preSelectedArtwork?: Artwork | null; // for @/hooks/useArtworkManagerTrigger
 }
 
 interface FormData {
@@ -20,9 +21,10 @@ interface FormData {
   descriptionPath?: string;
   description: string;
   file?: File;
+  textWidthPercentage?: number; // interface extension, keep this optional
 }
 
-const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose }) => {
+const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArtwork }) => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [currentArtwork, setCurrentArtwork] = useState<FormData | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -37,6 +39,27 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose }) => {
     };
     loadArtworks();
   }, []);
+
+  // Handle preSelectedArtwork when provided
+  useEffect(() => {
+    if (preSelectedArtwork) {
+      const formData: FormData = {
+        id: preSelectedArtwork.id,
+        year: preSelectedArtwork.year,
+        imageUrl: preSelectedArtwork.imageUrl,
+        title: preSelectedArtwork.title,
+        type: preSelectedArtwork.type,
+        descriptionPath: preSelectedArtwork.descriptionPath,
+        description: preSelectedArtwork.description || '',
+        textWidthPercentage: preSelectedArtwork.textWidthPercentage,
+      };
+      setCurrentArtwork(formData);
+      setPreviewUrl(preSelectedArtwork.imageUrl);
+      setDescription(preSelectedArtwork.description || '');
+      setIsNewArtwork(false);
+    }
+  }, [preSelectedArtwork]);
+
 
   // Load description when an artwork is selected
   useEffect(() => {
@@ -83,7 +106,8 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose }) => {
       title: 'New Artwork',
       type: ArtworkDisplayType.FullScreen,
       description: '',
-      descriptionPath: ''
+      descriptionPath: '',
+      textWidthPercentage: 50 // Always include this
     };
     setCurrentArtwork(newArtwork);
     setIsNewArtwork(true);
@@ -95,6 +119,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose }) => {
     setCurrentArtwork({
       ...artwork,
       type: artwork.type,
+      textWidthPercentage: artwork.textWidthPercentage || 50, // Default to 50%
       description: ''  // Will be loaded by useEffect
     });
     setIsNewArtwork(false);
@@ -114,9 +139,23 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose }) => {
       return;
     }
 
+    const newType = name === 'type' ? parseInt(value) : currentArtwork.type;
+
     setCurrentArtwork({
       ...currentArtwork,
-      [name]: name === 'year' ? parseInt(value) : value,
+      [name]: name === 'year'
+        ? parseInt(value)
+        : name === 'textWidthPercentage'
+          ? parseInt(value)
+          : value,
+      ...(name === 'type'
+        ? {
+          type: newType,
+          textWidthPercentage: newType === ArtworkDisplayType.SplitScreenTextLeft
+            ? 50
+            : undefined
+        }
+        : {}),
       ...(name === 'year' && currentArtwork.file
         ? { imageUrl: `/artwork/${value}/${currentArtwork.file.name}` }
         : {})
@@ -158,7 +197,10 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose }) => {
         imageUrl: imageUrl,
         title: currentArtwork.title,
         type: parseInt(currentArtwork.type as unknown as string) as ArtworkDisplayType,
-        descriptionPath: descriptionPath
+        descriptionPath: descriptionPath,
+        textWidthPercentage: currentArtwork.type === ArtworkDisplayType.SplitScreenTextLeft
+          ? currentArtwork.textWidthPercentage || 50
+          : undefined // Only save for SplitScreenTextLeft
       };
       
       // 4. Update artwork list
@@ -304,12 +346,38 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose }) => {
                   onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
                 >
-                  <option value={ArtworkDisplayType.FullScreen}>Full Screen</option>
+                  <option value={ArtworkDisplayType.FullScreen}>Full Screen No Description</option>
+                  <option value={ArtworkDisplayType.FullScreenWithOverlay}>Full Screen With Description Overlay</option>
                   <option value={ArtworkDisplayType.SplitScreenTextLeft}>Split Screen Text Left</option>
-                  <option value={ArtworkDisplayType.FullScreenWithOverlay}>Full Screen With Overlay</option>
                 </select>
               </div>
 
+              {/* Add this conditionally when SplitScreenTextLeft is selected */}
+              {(currentArtwork.type === ArtworkDisplayType.SplitScreenTextLeft ||
+                (currentArtwork.textWidthPercentage !== undefined &&
+                  currentArtwork.textWidthPercentage !== null)) && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Text Width Percentage</label>
+                    <select
+                      name="textWidthPercentage"
+                      value={currentArtwork.textWidthPercentage || 50}
+                      onChange={handleInputChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+                    >
+                      <option value={20}>20%</option>
+                      <option value={25}>25%</option>
+                      <option value={30}>30%</option>
+                      <option value={35}>35%</option>
+                      <option value={40}>40%</option>
+                      <option value={45}>45%</option>
+                      <option value={50}>50%</option>
+                      <option value={55}>55%</option>
+                      <option value={60}>60%</option>
+                      <option value={65}>65%</option>
+                      <option value={70}>70%</option>
+                    </select>
+                  </div>
+                )}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Description</label>
                 <textarea
@@ -336,8 +404,6 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose }) => {
                   <button
                     type="button"
                     onClick={() => handleDelete(currentArtwork?.id ?? "")}
-                    // onClick={() => handleDelete(currentArtwork.id)}
-                    // onClick={() => handleDelete((currentArtwork as any).id)}
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                   >
                     Delete
@@ -363,9 +429,6 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose }) => {
   </div>
   </div>
   );
-
-
-
 };
 
 export default ArtworkManager;

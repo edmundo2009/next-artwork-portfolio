@@ -4,14 +4,30 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Artwork, ArtworkDisplayType, ArtworkStyle } from '@/types/artwork';
 import TextOverlay from './TextOverlay';
-
+import Image from 'next/image';
 interface ArtworkDisplayProps {
   artwork: Artwork;
 }
 
 const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
   const [markdownContent, setMarkdownContent] = useState<string>('');
+  
+  // Default width/height for full-screen and other types
+  const defaultImageProps = {
+    fill: true,
+    objectFit: "contain",
+    alt: artwork.title
+  };
 
+  // Adjust image props based on display type
+  const imageProps = artwork.type === ArtworkDisplayType.SplitScreenTextLeft
+    ? {
+      ...defaultImageProps,
+    }
+    : {
+      ...defaultImageProps,
+    };
+  
   useEffect(() => {
     if (artwork.descriptionPath) {
       fetch(artwork.descriptionPath)
@@ -44,31 +60,13 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
         }
       }
     },
-    [ArtworkDisplayType.SplitScreenTextLeft]: {//2nd default style
-      textPlacement: 'top-left',
-      textColor: 'black',
-      bgOpacity: 0,
-      typography: {
-        title: {
-          size: '3xl',
-          weight: 'bold',
-          marginBottom: 4
-        }
-      },
-      spacing: {
-        padding: {
-          x: 4,
-          y: 1
-        }
-      }
-    },
-    [ArtworkDisplayType.FullScreenWithOverlay]: {//3rd default style
+    [ArtworkDisplayType.FullScreenWithOverlay]: {//2nd default style
       textPlacement: 'bottom-left',
       textColor: 'black',
       bgOpacity: 0.1,
       typography: {
         title: {
-          size: '4xl',
+          size: '3xl',
           weight: 'bold',
           marginBottom: 4
         },
@@ -88,7 +86,25 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
           x: 2
         }
       }
-    }
+    },
+    [ArtworkDisplayType.SplitScreenTextLeft]: {//3rd default style
+      textPlacement: 'top-left',
+      textColor: 'black',
+      bgOpacity: 0,
+      typography: {
+        title: {
+          size: '3xl',
+          weight: 'bold',
+          marginBottom: 4
+        }
+      },
+      spacing: {
+        padding: {
+          x: 4,
+          y: 1
+        }
+      }
+    },
   };
 
   // Merge default styles with artwork-specific styles
@@ -115,10 +131,10 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
 
   const renderFullScreen = () => (
     <div className="w-full h-full relative">
-      <img
+      <Image
         src={artwork.imageUrl}
-        alt={artwork.title}
-        className="w-full h-full object-cover"
+        {...imageProps}
+        className="w-full h-full object-contain"
       />
       <TextOverlay style={style}>
         <h2 className="text-2xl font-bold">{artwork.title} ({artwork.year})</h2>
@@ -126,42 +142,13 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
     </div>
   );
 
-  const renderSplitScreenTextLeft = () => (
-    <div className="flex w-full h-full">
-      <div className="w-1/2 relative bg-gray-100 overflow-y-auto">
-        <TextOverlay style={style}>
-          <div>
-            <h2>{artwork.title}</h2>
-            {/* <h2>{artwork.title} ({artwork.year})</h2> */}
-            {markdownContent && (
-              <ReactMarkdown
-                components={MarkdownComponents}
-                remarkPlugins={[remarkGfm]}
-                className="prose max-w-none"
-              >
-                {markdownContent}
-              </ReactMarkdown>
-            )}
-          </div>
-        </TextOverlay>
-      </div>
-      <div className="w-1/2">
-        <img
-          src={artwork.imageUrl}
-          alt={artwork.title}
-          className="w-full h-full object-cover"
-        />
-      </div>
-    </div>
-  );
-
-
   const renderFullScreenWithOverlay = () => (
     <div className="w-full h-full relative">
-      <img
+      <Image
         src={artwork.imageUrl}
-        alt={artwork.title}
-        className="w-full h-full object-cover"
+        {...imageProps}
+        className="w-full h-full object-contain"
+        // className="w-full h-full object-cover"
       />
       <TextOverlay style={style}>
         <div>
@@ -182,15 +169,51 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
     </div>
   );
 
-
+  // const textWidthPercentage = artwork.textWidthPercentage || 50;
+  // const imageWidthPercentage = 100 - textWidthPercentage;
+  const renderSplitScreenTextLeft = () => (
+    <div className="flex w-full h-full">
+      <div
+        className="relative overflow-y-auto"
+        style={{ width: `${artwork.textWidthPercentage || 50}%` }}
+      >
+        <TextOverlay style={style}>
+          <div>
+            <h2>{artwork.title}</h2>
+            {markdownContent && (
+              <ReactMarkdown
+                components={MarkdownComponents}
+                remarkPlugins={[remarkGfm]}
+                className="prose max-w-none"
+              >
+                {markdownContent}
+              </ReactMarkdown>
+            )}
+          </div>
+        </TextOverlay>
+      </div>
+      <div
+        className="relative"
+        style={{ width: `${100 - (artwork.textWidthPercentage || 50)}%` }}
+      >
+        <Image
+          src={artwork.imageUrl}
+          // alt={artwork.title}
+          {...imageProps}
+          // layout="fill" //layout="fill" and objectFit="contain" for responsive image display
+          objectFit="contain"
+        />
+      </div>
+    </div>
+  );
 
   switch (artwork.type) {
     case ArtworkDisplayType.FullScreen:
       return renderFullScreen();
-    case ArtworkDisplayType.SplitScreenTextLeft:
-      return renderSplitScreenTextLeft();
     case ArtworkDisplayType.FullScreenWithOverlay:
       return renderFullScreenWithOverlay();
+    case ArtworkDisplayType.SplitScreenTextLeft:
+      return renderSplitScreenTextLeft();
 
     default:
       return renderFullScreen();

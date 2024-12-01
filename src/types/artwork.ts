@@ -3,8 +3,8 @@
 // Artwork display types
 export enum ArtworkDisplayType {
   FullScreen = 1,
-  SplitScreenTextLeft = 2,
-  FullScreenWithOverlay = 3,
+  FullScreenWithOverlay = 2,
+  SplitScreenTextLeft = 3,
 }
 
 export interface Artwork {
@@ -15,6 +15,8 @@ export interface Artwork {
   type: ArtworkDisplayType;
   descriptionPath?: string; // Path to markdown description
   style?: ArtworkStyle;
+  textWidthPercentage?: number; // interface extension
+  description?: string;
 }
 
 export interface ArtworkStyle {

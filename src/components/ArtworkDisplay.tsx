@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Artwork, ArtworkDisplayType, ArtworkStyle } from '@/types/artwork';
+import { Artwork, ArtworkDisplayType, ArtworkStyle} from '@/types/artwork';
 import TextOverlay from './TextOverlay';
 import Image from 'next/image';
 interface ArtworkDisplayProps {
@@ -21,12 +21,8 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
 
   // Adjust image props based on display type
   const imageProps = artwork.type === ArtworkDisplayType.SplitScreenTextLeft
-    ? {
-      ...defaultImageProps,
-    }
-    : {
-      ...defaultImageProps,
-    };
+    ? { ...defaultImageProps, }
+    : { ...defaultImageProps, };
   
   useEffect(() => {
     if (artwork.descriptionPath) {
@@ -137,7 +133,7 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
         className="w-full h-full object-contain"
       />
       <TextOverlay style={style}>
-        <h2 className="text-2xl font-bold">{artwork.title} ({artwork.year})</h2>
+        <h2 className="text-2xl font-bold">{artwork.title} </h2>
       </TextOverlay>
     </div>
   );
@@ -169,8 +165,6 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
     </div>
   );
 
-  // const textWidthPercentage = artwork.textWidthPercentage || 50;
-  // const imageWidthPercentage = 100 - textWidthPercentage;
   const renderSplitScreenTextLeft = () => (
     <div className="flex w-full h-full">
       <div

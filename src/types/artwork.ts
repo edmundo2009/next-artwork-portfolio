@@ -7,9 +7,17 @@ export enum ArtworkDisplayType {
   SplitScreenTextLeft = 3,
 }
 
+// Artwork category types
+export enum ArtworkCategoryType {
+  drawings = 1,
+  installations = 2,
+  paintings = 3,
+  video = 4,
+}
+
 export interface Artwork {
   id: string;
-  year: number;
+  category: ArtworkCategoryType;
   imageUrl: string;
   title: string;
   type: ArtworkDisplayType;
@@ -66,10 +74,9 @@ export interface ArtworkHookReturn {
 }
 
 export interface FloatingMenuProps {
-  years: number[];
-  selectedYear: number | null;
-  onYearSelect: (year: number | null) => void;
-  // onAdminAccess: () => void; // New prop for admin access
+  categories: ArtworkCategoryType[];
+  selectedCategory: ArtworkCategoryType | null;
+  onCategorySelect: (category: ArtworkCategoryType | null) => void;
 }
 
 export interface NavigationArrowsProps {

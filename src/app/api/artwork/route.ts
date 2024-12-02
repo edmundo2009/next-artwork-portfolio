@@ -26,7 +26,7 @@ async function readArtworkData(): Promise<Artwork[]> {
 async function writeArtworkData(artworks: Artwork[]): Promise<boolean> {
   try {
     const fileContent = `import { Artwork} from '@/types/artwork';
-  
+
 export const mockArtworks: Artwork[] = ${JSON.stringify(artworks, null, 2)};`;
     await fs.writeFile(ARTWORK_DATA_PATH, fileContent);
     return true;
@@ -89,23 +89,23 @@ export async function POST(request: NextRequest) {
     case 'upload-image':
       try {
         const file = data.get('file') as File;
-        const year = data.get('year') as string;
+        const category = data.get('category') as string;
 
         if (!file) {
           return NextResponse.json({ error: 'No file provided' }, { status: 400 });
         }
 
-        const yearDir = path.join(PUBLIC_ARTWORK_DIR, year);
-        await fs.mkdir(yearDir, { recursive: true });
+        const categoryDir = path.join(PUBLIC_ARTWORK_DIR, category);
+        await fs.mkdir(categoryDir, { recursive: true });
 
         //  server-side API route for image upload
         const filename = data.get('filename') as string;
-        const newPath = path.join(yearDir, filename);
+        const newPath = path.join(categoryDir, filename);
 
         const arrayBuffer = await file.arrayBuffer();
         await fs.writeFile(newPath, Buffer.from(arrayBuffer));
 
-        return NextResponse.json({ path: `/artwork/${year}/${filename}` }, { status: 200 });
+        return NextResponse.json({ path: `/artwork/${category}/${filename}` }, { status: 200 });
       } catch (error) {
         console.error('Error saving image file:', error);
         return NextResponse.json({ error: 'Failed to save image file' }, { status: 500 });

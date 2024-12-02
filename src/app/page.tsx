@@ -2,25 +2,27 @@
 'use client';
 import React, { useRef, useState } from 'react';
 import { mockArtworks } from '@/data/artwork-description';
-import { getUniqueYears } from '@/utils/years';
+import { getUniqueCategories } from '@/utils/categories';
 import { useArtworks } from '@/hooks/useArtworks';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import ArtworkDisplay from '@/components/ArtworkDisplay';
 import NavigationArrows from '@/components/NavigationArrows';
 import FloatingMenu from '@/components/FloatingMenu';
 import { useArtworkManagerTrigger } from '@/hooks/useArtworkManagerTrigger';
+import { ArtworkCategoryType } from '@/types/artwork';
 
 
 const ArtworkGallery: React.FC = () => {
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
-    
+  // const [selectedCategory, setselectedCategory] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<ArtworkCategoryType | null>(null);
+
   const {
     currentArtwork,
     handlePrev,
     handleNext,
     hasPrev,
     hasNext
-  } = useArtworks(selectedYear);
+  } = useArtworks(selectedCategory);
 
   const artworkRef = useRef<HTMLDivElement>(null);
   
@@ -28,7 +30,7 @@ const ArtworkGallery: React.FC = () => {
 
   useKeyboardNavigation(handlePrev, handleNext, isArtworkManagerOpen);
 
-  const years = getUniqueYears(mockArtworks);
+  const categories = getUniqueCategories(mockArtworks);
 
   if (!currentArtwork) return null;
 
@@ -37,9 +39,9 @@ const ArtworkGallery: React.FC = () => {
 
       {/* Floating Menu for Year Selection */}
       <FloatingMenu
-        years={years}
-        selectedYear={selectedYear}
-        onYearSelect={setSelectedYear}
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onCategorySelect={setSelectedCategory}
       />
 
       {/* Navigation Arrows */}

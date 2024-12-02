@@ -1,18 +1,18 @@
 // hooks/useArtworks.ts
 import { useState, useEffect } from 'react';
-import { Artwork } from '@/types/artwork';
+import { Artwork, ArtworkCategoryType } from '@/types/artwork';
 import { preloadImage } from '@/utils/imagePreloader';
 import { mockArtworks } from '@/data/artwork-description';
 
-export const useArtworks = (selectedYear: number | null) => {
+export const useArtworks = (selectedCategory: ArtworkCategoryType | null) => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   useEffect(() => {
     const fetchArtworks = async () => {
-      // Filter artworks by selected year if provided
-      const filteredArtworks = selectedYear
-        ? mockArtworks.filter(artwork => artwork.year === selectedYear)
+      // Filter artworks by selected category if provided
+      const filteredArtworks = selectedCategory
+        ? mockArtworks.filter(artwork => artwork.category === selectedCategory)
         : mockArtworks;
 
       setArtworks(filteredArtworks);
@@ -25,7 +25,7 @@ export const useArtworks = (selectedYear: number | null) => {
     };
 
     fetchArtworks();
-  }, [selectedYear]);
+  }, [selectedCategory]);
 
   // Preload adjacent images
   useEffect(() => {

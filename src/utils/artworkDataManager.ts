@@ -1,5 +1,5 @@
 // src/utils/artworkDataManager.ts
-import { Artwork } from '@/types/artwork';
+import { Artwork, ArtworkCategoryType } from '@/types/artwork';
 
 class ArtworkDataManager {
   private static async apiRequest(operation: string, data?: FormData | object, method: 'GET' | 'POST' = 'POST') {
@@ -67,15 +67,15 @@ class ArtworkDataManager {
     }
   }
 
-  static async saveImageFile(file: File, year: number, originalFilename?: string): Promise<string> {
+  static async saveImageFile(file: File, category: ArtworkCategoryType,  originalFilename?: string): Promise<string> {
     try {
       // Use the provided originalFilename or fallback to the uploaded file's name
       const filename = originalFilename || file.name;
-      const filePath = `/artwork/${year}/${filename}`;
+      const filePath = `/artwork/${category}/${filename}`;
 
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('year', year.toString());
+      formData.append('category', category.toString());
       formData.append('filename', filename);
 
       await this.apiRequest('upload-image', formData);

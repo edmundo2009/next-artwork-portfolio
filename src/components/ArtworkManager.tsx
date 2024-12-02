@@ -3,9 +3,11 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Artwork, ArtworkDisplayType } from '@/types/artwork';
+import { Artwork, ArtworkDisplayType, ArtworkCategoryType } from '@/types/artwork';
 import ArtworkDataManager from '@/utils/artworkDataManager';
 import Image from 'next/image';
+import { getCategoryName } from '@/utils/categoryMapper';
+import { getTypeName } from '@/utils/typeMapper';
 
 interface ArtworkManagerProps {
   onClose: () => void;
@@ -14,7 +16,7 @@ interface ArtworkManagerProps {
 
 interface FormData {
   id?: string;
-  year: number;
+  category: ArtworkCategoryType;
   imageUrl: string;
   title: string;
   type: ArtworkDisplayType;
@@ -45,7 +47,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
     if (preSelectedArtwork) {
       const formData: FormData = {
         id: preSelectedArtwork.id,
-        year: preSelectedArtwork.year,
+        category: preSelectedArtwork.category,
         imageUrl: preSelectedArtwork.imageUrl,
         title: preSelectedArtwork.title,
         type: preSelectedArtwork.type,
@@ -77,7 +79,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
-      const currentYear = currentArtwork?.year || new Date().getFullYear();
+      const currentCategory = currentArtwork?.category;
 
       if (currentArtwork) {
         const imageUrl = URL.createObjectURL(file);
@@ -85,7 +87,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
         setCurrentArtwork({
           ...currentArtwork,
           file,
-          imageUrl: `/artwork/${currentYear}/${file.name}`
+          imageUrl: `/artwork/${currentCategory}/${file.name}`
         });
       }
     }
@@ -99,13 +101,15 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
     multiple: false
   });
 
+  //////////////////////////////////////////////////////////
+
   const handleAddArtwork = () => {
     const newArtwork: FormData = {
-      year: new Date().getFullYear(),
+      category: ArtworkCategoryType.paintings,
       imageUrl: '',
-      title: 'New Artwork',
+      title: '',
       type: ArtworkDisplayType.FullScreen,
-      description: '',
+      description: 'if fullscreeen template, no markdown file created',
       descriptionPath: '',
       textWidthPercentage: 50 // Always include this
     };
@@ -118,6 +122,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
   const handleEditArtwork = (artwork: Artwork) => {
     setCurrentArtwork({
       ...artwork,
+      category: artwork.category,
       type: artwork.type,
       textWidthPercentage: artwork.textWidthPercentage || 50, // Default to 50%
       description: ''  // Will be loaded by useEffect
@@ -125,6 +130,8 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
     setIsNewArtwork(false);
     setPreviewUrl(artwork.imageUrl);
   };
+
+  //////////////////////////////////////////////////////////
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -143,8 +150,8 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
 
     setCurrentArtwork({
       ...currentArtwork,
-      [name]: name === 'year'
-        ? parseInt(value)
+      [name]: name === 'category'
+        ? parseInt(value) as ArtworkCategoryType
         : name === 'textWidthPercentage'
           ? parseInt(value)
           : value,
@@ -156,12 +163,13 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
             : undefined
         }
         : {}),
-      ...(name === 'year' && currentArtwork.file
+      ...(name === 'category' && currentArtwork.file
         ? { imageUrl: `/artwork/${value}/${currentArtwork.file.name}` }
         : {})
     });
   };
 
+  //////////////////////////////////////////////////////////
   const handleSave = async () => {
     if (!currentArtwork) return;
 
@@ -172,7 +180,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
         const originalFilename = currentArtwork.file.name;
         imageUrl = await ArtworkDataManager.saveImageFile(
           currentArtwork.file,
-          currentArtwork.year,
+          currentArtwork.category,
           originalFilename  // Pass the original filename
         );
       }
@@ -193,7 +201,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
             ? currentArtwork.file.name.replace(/\.[^/.]+$/, '')
             : `artwork-${Date.now()}`
           ) : currentArtwork.id!,
-        year: currentArtwork.year,
+        category: currentArtwork.category, // Ensure category is correctly set
         imageUrl: imageUrl,
         title: currentArtwork.title,
         type: parseInt(currentArtwork.type as unknown as string) as ArtworkDisplayType,
@@ -202,7 +210,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
           ? currentArtwork.textWidthPercentage || 50
           : undefined // Only save for SplitScreenTextLeft
       };
-      
+
       // 4. Update artwork list
       let newArtworks: Artwork[];
       if (isNewArtwork) {
@@ -229,6 +237,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
     }
   };
 
+  //////////////////////////////////////////////////////////
   const handleDelete = async (id: string) => {
     const artworkToDelete = artworks.find(art => art.id === id);
 
@@ -254,10 +263,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
   <div className="bg-white p-6 rounded-lg w-full max-w-6xl max-h-[90vh] overflow-y-auto">
     <div className="flex justify-between items-center mb-4">
       <h2 className="text-2xl font-bold text-black">Artwork Manager</h2>
-      <button
-        onClick={onClose}
-        className="text-gray-600 hover:text-gray-900"
-      >
+      <button onClick={onClose} className="text-gray-600 hover:text-gray-900" >
         Close
       </button>
     </div>
@@ -283,7 +289,12 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
                 }`}
             >
               <div className="font-medium">{artwork.title}</div>
-              <div className="text-sm text-gray-500">{artwork.year}</div>
+              {/* <div className="text-sm text-gray-500">{getCategoryName(artwork.category)}</div> */}
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500">{getCategoryName(artwork.category)}</span>
+                <span className="text-blue-500 mx-2">{getTypeName(artwork.type)}</span>
+                <span className="text-gray-600">{artwork.imageUrl.split('/').pop()}</span>
+              </div>
             </div>
           ))}
         </div>
@@ -317,7 +328,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
             {/* Form Fields */}
             <div className="space-y-4 ">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <label className="label">Title</label>
                 <input
                   type="text"
                   name="title"
@@ -328,25 +339,30 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Year</label>
-                <input
-                  type="number"
-                  name="year"
-                  value={currentArtwork.year}
+                <label className="label">Category</label>
+                <select
+                  name="category"
+                  value={currentArtwork.category}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
-                />
+                  className="field"
+                >
+                  <option value={ArtworkCategoryType.drawings}>1.Drawings</option>
+                  <option value={ArtworkCategoryType.installations}>2.Installations</option>
+                  <option value={ArtworkCategoryType.paintings}>3.Paintings</option>
+                  <option value={ArtworkCategoryType.video}>4.Video</option>
+                </select>
               </div>
 
+
               <div>
-                <label className="block text-sm font-medium text-gray-700">Type</label>
+                <label className="label">Type</label>
                 <select
                   name="type"
                   value={currentArtwork.type}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+                  className="field"
                 >
-                  <option value={ArtworkDisplayType.FullScreen}>Full Screen No Description</option>
+                  <option value={ArtworkDisplayType.FullScreen}>Full Screen + Title</option>
                   <option value={ArtworkDisplayType.FullScreenWithOverlay}>Full Screen With Description Overlay</option>
                   <option value={ArtworkDisplayType.SplitScreenTextLeft}>Split Screen Text Left</option>
                 </select>
@@ -357,12 +373,12 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
                 (currentArtwork.textWidthPercentage !== undefined &&
                   currentArtwork.textWidthPercentage !== null)) && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Text Width Percentage</label>
+                    <label className="label">Text Width Percentage</label>
                     <select
                       name="textWidthPercentage"
                       value={currentArtwork.textWidthPercentage || 50}
                       onChange={handleInputChange}
-                      className="mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+                      className="field"
                     >
                       <option value={20}>20%</option>
                       <option value={25}>25%</option>
@@ -379,20 +395,19 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
                   </div>
                 )}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <label className="label">Description</label>
                 <textarea
                   name="description"
                   value={description}
                   onChange={handleInputChange}
                   rows={4}
-                  className="mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+                  className="field"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Image URL</label>
-                <input
-                  type="text"
+                <label className="label">Image URL</label>
+                <input type="text"
                   value={currentArtwork.imageUrl}
                   readOnly
                   className="mt-1 block w-full rounded-md border-black bg-gray-50  px-2 py-1"
@@ -401,16 +416,14 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
 
               <div className="flex justify-end space-x-4">
                 {!isNewArtwork && (
-                  <button
-                    type="button"
+                  <button type="button"
                     onClick={() => handleDelete(currentArtwork?.id ?? "")}
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                   >
                     Delete
                   </button>
                 )}
-                <button
-                  type="button"
+                <button type="button"
                   onClick={handleSave}
                   className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                 >

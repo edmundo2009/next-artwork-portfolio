@@ -1,21 +1,37 @@
 import { Artwork} from '@/types/artwork';
-  
+
 export const mockArtworks: Artwork[] = [
   {
-    "id": "utaChamp",
-    "year": 2024,
-    "imageUrl": "/artwork/2024/utaChamp.png",
-    "title": "uta",
+    "id": "3-orig",
+    "category": 1,
+    "imageUrl": "/artwork/drawings/3-orig.png",
+    "title": "orig",
     "type": 1,
-    "descriptionPath": "/descriptions/uta.md"
+    "descriptionPath": ""
   },
   {
-    "id": "qr-logo",
-    "year": 2024,
-    "imageUrl": "/artwork/2024/qr-logo.png",
-    "title": "New Artwork",
+    "id": "mmm2",
+    "category": 3,
+    "imageUrl": "/artwork/paintings/mmm2.png",
+    "title": "mmm",
     "type": 3,
-    "descriptionPath": "/descriptions/new-artwork.md",
+    "descriptionPath": "/descriptions/mmm.md",
     "textWidthPercentage": 70
+  },
+  {
+    "id": "mmm-Line",
+    "category": 1,
+    "imageUrl": "/artwork/installations/mmm-Line.jpg",
+    "title": "lllllllllll",
+    "type": 1,
+    "descriptionPath": "/descriptions/lllllllllll.md"
+  },
+  {
+    "id": "1",
+    "category": 2,
+    "imageUrl": "/artwork/installations/1.png",
+    "title": "asd",
+    "type": 1,
+    "descriptionPath": ""
   }
 ];

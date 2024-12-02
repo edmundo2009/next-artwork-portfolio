@@ -40,12 +40,12 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
   const defaultStyles: { [key in ArtworkDisplayType]: ArtworkStyle } = {
     [ArtworkDisplayType.FullScreen]: {//1st default style
       textPlacement: 'bottom-left',
-      textColor: 'white',
-      bgOpacity: 0.9,
+      textColor: 'black',
+      bgOpacity: 0,
       typography: {
         title: {
-          size: '2xl',
-          weight: 'bold',
+          size: 'sm',
+          weight: 'normal',
           marginBottom: 2
         }
       },
@@ -56,13 +56,13 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
         }
       }
     },
-    [ArtworkDisplayType.FullScreenWithOverlay]: {//2nd default style
+    [ArtworkDisplayType.FullScreen2]: {//2nd default style
       textPlacement: 'bottom-left',
       textColor: 'black',
       bgOpacity: 0.1,
       typography: {
         title: {
-          size: '3xl',
+          size: 'xl',
           weight: 'bold',
           marginBottom: 4
         },
@@ -84,14 +84,14 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
       }
     },
     [ArtworkDisplayType.SplitScreenTextLeft]: {//3rd default style
-      textPlacement: 'top-left',
+      textPlacement: 'bottom-left',
       textColor: 'black',
       bgOpacity: 0,
       typography: {
         title: {
-          size: '3xl',
+          size: '2xl',
           weight: 'bold',
-          marginBottom: 4
+          marginBottom: 2
         }
       },
       spacing: {
@@ -125,7 +125,7 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
     blockquote: (props: React.ComponentProps<'blockquote'>) => <blockquote className="border-l-4 border-gray-300 pl-4 italic" {...props} />,
   };
 
-  const renderFullScreen = () => (
+  const renderFullScreen_Title = () => (
     <div className="w-full h-full relative">
       <Image
         src={artwork.imageUrl}
@@ -133,12 +133,15 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
         className="w-full h-full object-contain"
       />
       <TextOverlay style={style}>
-        <h2 className="text-2xl font-bold">{artwork.title} </h2>
+        <h2 className="text-2xl font-bold">{artwork.title}</h2>
+        {artwork.titleLine2 && (
+          <h2 className="text-2xl font-bold mt-2">{artwork.titleLine2}</h2>
+        )}
       </TextOverlay>
     </div>
   );
 
-  const renderFullScreenWithOverlay = () => (
+  const renderFullScreen_twoTitle = () => (
     <div className="w-full h-full relative">
       <Image
         src={artwork.imageUrl}
@@ -147,8 +150,11 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
         // className="w-full h-full object-cover"
       />
       <TextOverlay style={style}>
+        <h2 className="text-2xl font-bold">{artwork.title}</h2>
+      </TextOverlay>
+      <TextOverlay style={style}>
         <div>
-          <h2>{artwork.title}</h2>
+          {/* <h2>{artwork.title}</h2> */}
           {markdownContent && (
             <div>
               <ReactMarkdown
@@ -203,14 +209,14 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
 
   switch (artwork.type) {
     case ArtworkDisplayType.FullScreen:
-      return renderFullScreen();
-    case ArtworkDisplayType.FullScreenWithOverlay:
-      return renderFullScreenWithOverlay();
+      return renderFullScreen_Title();
+    case ArtworkDisplayType.FullScreen2:
+      return renderFullScreen_twoTitle();
     case ArtworkDisplayType.SplitScreenTextLeft:
       return renderSplitScreenTextLeft();
 
     default:
-      return renderFullScreen();
+      return renderFullScreen_Title();
   }
 };
 

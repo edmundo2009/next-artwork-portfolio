@@ -2,36 +2,29 @@ import { Artwork} from '@/types/artwork';
 
 export const mockArtworks: Artwork[] = [
   {
-    "id": "3-orig",
-    "category": 1,
-    "imageUrl": "/artwork/drawings/3-orig.png",
-    "title": "orig",
+    "id": "test",
+    "category": 4,
+    "imageUrl": "/artwork/4/test.jpg",
+    "title": "thethethethethe",
+    "titleLine2": "2nd line",
     "type": 1,
     "descriptionPath": ""
   },
   {
-    "id": "mmm2",
-    "category": 3,
-    "imageUrl": "/artwork/paintings/mmm2.png",
-    "title": "mmm",
+    "id": "frame",
+    "category": 1,
+    "imageUrl": "/artwork/1/frame.png",
+    "title": "fra",
     "type": 3,
-    "descriptionPath": "/descriptions/mmm.md",
-    "textWidthPercentage": 70
+    "descriptionPath": "/descriptions/fra.md",
+    "textWidthPercentage": 50
   },
   {
     "id": "mmm-Line",
-    "category": 1,
-    "imageUrl": "/artwork/installations/mmm-Line.jpg",
-    "title": "lllllllllll",
-    "type": 1,
-    "descriptionPath": "/descriptions/lllllllllll.md"
-  },
-  {
-    "id": "1",
-    "category": 2,
-    "imageUrl": "/artwork/installations/1.png",
-    "title": "asd",
-    "type": 1,
-    "descriptionPath": ""
+    "category": 3,
+    "imageUrl": "/artwork/3/mmm-Line.jpg",
+    "title": "sssss",
+    "type": 2,
+    "descriptionPath": "/descriptions/sssss.md"
   }
 ];

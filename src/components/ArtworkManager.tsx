@@ -19,6 +19,7 @@ interface FormData {
   category: ArtworkCategoryType;
   imageUrl: string;
   title: string;
+  titleLine2?: string; // New property for the second line
   type: ArtworkDisplayType;
   descriptionPath?: string;
   description: string;
@@ -169,6 +170,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
     });
   };
 
+
   //////////////////////////////////////////////////////////
   const handleSave = async () => {
     if (!currentArtwork) return;
@@ -201,9 +203,10 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
             ? currentArtwork.file.name.replace(/\.[^/.]+$/, '')
             : `artwork-${Date.now()}`
           ) : currentArtwork.id!,
-        category: currentArtwork.category, // Ensure category is correctly set
+        category: currentArtwork.category, 
         imageUrl: imageUrl,
         title: currentArtwork.title,
+        titleLine2: currentArtwork.titleLine2, // Include the second line
         type: parseInt(currentArtwork.type as unknown as string) as ArtworkDisplayType,
         descriptionPath: descriptionPath,
         textWidthPercentage: currentArtwork.type === ArtworkDisplayType.SplitScreenTextLeft
@@ -332,9 +335,19 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
                 <input
                   type="text"
                   name="title"
-                  value={currentArtwork.title}
+                  value={currentArtwork?.title || ''}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md  border-gray-300 border-2 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-2 py-1"
+                  className="field"
+                />
+              </div>
+              <div>
+                <label className="label">Title Line 2</label>
+                <input
+                  type="text"
+                  name="titleLine2"
+                  value={currentArtwork?.titleLine2 || ''}
+                  onChange={handleInputChange}
+                  className="field"
                 />
               </div>
 
@@ -363,37 +376,36 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
                   className="field"
                 >
                   <option value={ArtworkDisplayType.FullScreen}>Full Screen + Title</option>
-                  <option value={ArtworkDisplayType.FullScreenWithOverlay}>Full Screen With Description Overlay</option>
+                  <option value={ArtworkDisplayType.FullScreen2}>Full Screen With Description Overlay</option>
                   <option value={ArtworkDisplayType.SplitScreenTextLeft}>Split Screen Text Left</option>
                 </select>
               </div>
 
-              {/* Add this conditionally when SplitScreenTextLeft is selected */}
-              {(currentArtwork.type === ArtworkDisplayType.SplitScreenTextLeft ||
-                (currentArtwork.textWidthPercentage !== undefined &&
-                  currentArtwork.textWidthPercentage !== null)) && (
-                  <div>
-                    <label className="label">Text Width Percentage</label>
-                    <select
-                      name="textWidthPercentage"
-                      value={currentArtwork.textWidthPercentage || 50}
-                      onChange={handleInputChange}
-                      className="field"
-                    >
-                      <option value={20}>20%</option>
-                      <option value={25}>25%</option>
-                      <option value={30}>30%</option>
-                      <option value={35}>35%</option>
-                      <option value={40}>40%</option>
-                      <option value={45}>45%</option>
-                      <option value={50}>50%</option>
-                      <option value={55}>55%</option>
-                      <option value={60}>60%</option>
-                      <option value={65}>65%</option>
-                      <option value={70}>70%</option>
-                    </select>
-                  </div>
-                )}
+              {currentArtwork.type === ArtworkDisplayType.SplitScreenTextLeft && (
+              <div>
+                <label className="label">Text Width Percentage</label>
+                <select
+                  name="textWidthPercentage"
+                  value={currentArtwork.textWidthPercentage || ''}
+                  onChange={handleInputChange}
+                  className="field"
+                >
+                  <option value={20}>20%</option>
+                  <option value={25}>25%</option>
+                  <option value={30}>30%</option>
+                  <option value={35}>35%</option>
+                  <option value={40}>40%</option>
+                  <option value={45}>45%</option>
+                  <option value={50}>50%</option>
+                  <option value={55}>55%</option>
+                  <option value={60}>60%</option>
+                  <option value={65}>65%</option>
+                  <option value={70}>70%</option>
+                </select>
+              </div>
+              )}
+
+              {currentArtwork.type !== ArtworkDisplayType.FullScreen && (
               <div>
                 <label className="label">Description</label>
                 <textarea
@@ -404,6 +416,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
                   className="field"
                 />
               </div>
+              )}
 
               <div>
                 <label className="label">Image URL</label>

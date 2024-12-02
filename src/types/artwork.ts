@@ -1,13 +1,11 @@
 // types/artwork.ts
 
-// Artwork display types
 export enum ArtworkDisplayType {
   FullScreen = 1,
-  FullScreenWithOverlay = 2,
+  FullScreen2 = 2,
   SplitScreenTextLeft = 3,
 }
 
-// Artwork category types
 export enum ArtworkCategoryType {
   drawings = 1,
   installations = 2,
@@ -20,8 +18,9 @@ export interface Artwork {
   category: ArtworkCategoryType;
   imageUrl: string;
   title: string;
+  titleLine2?: string; // property for the second line
   type: ArtworkDisplayType;
-  descriptionPath?: string; // Path to markdown description
+  descriptionPath?: string; // Path to md description
   style?: ArtworkStyle;
   textWidthPercentage?: number; // interface extension
   description?: string;

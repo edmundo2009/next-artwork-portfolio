@@ -8,6 +8,7 @@ import ArtworkDataManager from '@/utils/artworkDataManager';
 import Image from 'next/image';
 import { getCategoryName } from '@/utils/categoryMapper';
 import { getTypeName } from '@/utils/typeMapper';
+import ArtworkDisplay from '@/components/ArtworkDisplay';
 
 interface ArtworkManagerProps {
   onClose: () => void;
@@ -126,6 +127,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
   const handleEditArtwork = (artwork: Artwork) => {
     setCurrentArtwork({
       ...artwork,
+      id: artwork.id || '', // Ensure id is always a string
       category: artwork.category,
       type: artwork.type,
       textWidthPercentage: artwork.textWidthPercentage,
@@ -275,16 +277,7 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
       };
 
       // 4. Update artwork list
-      // let newArtworks: Artwork[];
-      // if (isNewArtwork) {
-      //   newArtworks = [...artworks, updatedArtwork];
-      // } else {
-      //   newArtworks = artworks.map(art =>
-      //     art.id === updatedArtwork.id ? updatedArtwork : art
-      //   );
-      // }
-
-      // this makes single click update from the list
+      // make single click update from the list
       const existingArtworks: Artwork[] = await ArtworkDataManager.readArtworkData();
 
       let newArtworks: Artwork[];
@@ -295,8 +288,6 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
           art.id === updatedArtwork.id ? updatedArtwork : art
         );
       }
-
-      
 
       // 5. Save to data file
       await ArtworkDataManager.writeArtworkData(newArtworks);
@@ -335,134 +326,256 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
     }
   };
 
-  return (
+return (
   <div className="fixed inset-0 z-50 bg-black bg-opacity-30 flex items-center justify-center">
-  <div className="bg-white p-6 rounded-lg w-full max-w-6xl max-h-[90vh] overflow-y-auto">
-    <div className="flex justify-between items-center mb-4">
-      <h2 className="text-2xl font-bold text-black">Artwork Manager</h2>
-      <button onClick={onClose} className="text-gray-600 hover:text-gray-900" >
-        Close
-      </button>
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {/* Artwork List */}
-      <div className="col-span-1 border-r pr-4">
-        <button
-          onClick={handleAddArtwork}
-          className="w-full bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600"
-        >
-          Add New Artwork
+    <div className="bg-white p-6 rounded-lg w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-black">Artwork Manager</h2>
+        <button onClick={onClose} className="text-gray-600 hover:text-gray-900">
+          Close
         </button>
-        <div className="space-y-2">
-          {artworks.map((artwork) => (
-            <div
-              key={artwork.id}
-              onClick={() => handleEditArtwork(artwork)}
-              className={`p-3 rounded cursor-pointer 
-              ${currentArtwork && currentArtwork.id === artwork.id
+      </div>
+
+      <div className="grid grid-cols-3 grid-rows gap-4">
+        {/* Artwork List single col on the left sidebar */}
+        <div className="col-span-1 row-span-2 border-r pr-4">
+          <button
+            onClick={handleAddArtwork}
+            className="w-full bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600"
+          >
+            Add New Artwork
+          </button>
+          <div className="space-y-2">
+            {artworks.map((artwork) => (
+              <div
+                key={artwork.id}
+                onClick={() => handleEditArtwork(artwork)}
+                className={`p-3 rounded cursor-pointer
+                ${currentArtwork && currentArtwork.id === artwork.id
                   ? 'bg-blue-100'
                   : 'hover:bg-gray-100'
                 }`}
-            >
-              <div className="font-medium">{artwork.title}</div>
-              {/* <div className="text-sm text-gray-500">{getCategoryName(artwork.category)}</div> */}
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">{getCategoryName(artwork.category)}</span>
-                <span className="text-blue-500 mx-2">{getTypeName(artwork.type)}</span>
-                <span className="text-gray-600">{artwork.imageUrl.split('/').pop()}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Editor Form */}
-      <div className="col-span-2 pl-4 text-black">
-        {currentArtwork ? (
-          <div className="space-y-4">
-            {/* Image Upload/Preview */}
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer
-              ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-600'}`}
-            >
-              <input {...getInputProps()} />
-              {previewUrl ? (
-                <div className="relative h-48 w-full">
-                  <Image
-                    src={previewUrl}
-                    alt="Preview"
-                    fill
-                    className="object-contain"
-                  />
+              >
+                <div className="font-medium">{artwork.title}</div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">{getCategoryName(artwork.category)}</span>
+                  <span className="text-blue-500 mx-2">{getTypeName(artwork.type)}</span>
+                  <span className="text-gray-600">{artwork.imageUrl.split('/').pop()}</span>
                 </div>
-              ) : (
-                <p>Drag & drop an image here or click to select</p>
-              )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* This spans two columns */}
+          {/* Image Upload/Preview */}
+          <div className="col-span-1 px-4 text-black">
+            <div className="space-y-4">
+              <div {...getRootProps()}
+                className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer
+                ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-600'}`}
+              >
+                <input {...getInputProps()} />
+                {previewUrl ? (
+                  <div className="relative h-48 w-full">
+                    {currentArtwork && currentArtwork.id ? (
+                      <ArtworkDisplay artwork={currentArtwork as Artwork} />
+                    ) : (
+                      <img
+                        src={previewUrl}
+                        alt="Preview"
+                        className="object-contain w-full h-full"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <p>Drag & drop an image here or click to select</p>
+                )}
+              </div>
             </div>
+          </div>
 
-            {/* Form Fields */}
-            <div className="space-y-4 ">
-              <div>
-                <label className="label">Title</label>
-                <input
-                  type="text"
-                  name="title"
-                  value={currentArtwork?.title || ''}
-                  onChange={handleInputChange}
+          {/* Title Group goes next to img on the right */}
+          <div className="h-48 col-span-1 px-4 text-black">
+            <div className="flex space-x-4">
+              <div className="flex-1 rounded">
+                <label className="label">Title Placement</label>
+                <select
                   className="field"
-                />
-              </div>
-              <div>
-                <label className="label">Title Line 2</label>
-                <input
-                  type="text"
-                  name="titleLine2"
-                  value={currentArtwork?.titleLine2 || ''}
-                  onChange={handleInputChange}
-                  className="field"
-                />
-              </div>
-
-            <div className=" rounded-lg space-y-4 mt-4">
-              {/* <h3 className="text-lg font-semibold">Display Style</h3> */}
-
-              <div className="flex space-x-4">
-                <div className="flex-1 rounded">
-                  <label className="block text-sm font-medium mb-1">Category</label>
-                  <select
-                    className="w-full border rounded p-2"
-                    value={currentArtwork?.category || ''}
-                    onChange={handleInputChange}
-                    name="category"
-                  >
-                  <option value={ArtworkCategoryType.drawings}>1.Drawings</option>
-                  <option value={ArtworkCategoryType.installations}>2.Installations</option>
-                  <option value={ArtworkCategoryType.paintings}>3.Paintings</option>
-                  <option value={ArtworkCategoryType.video}>4.Video</option>
+                  value={currentArtwork?.style?.textPlacement || 'bottom-left'}
+                  onChange={(e) => {
+                    setCurrentArtwork(prev => ({
+                      ...prev!,
+                      style: {
+                        ...prev!.style,
+                        textPlacement: e.target.value as any
+                      }
+                    }));
+                  }}
+                >
+                  <option value="top-left">Top Left</option>
+                  <option value="top-center">Top Center</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="center">Center</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="bottom-center">Bottom Center</option>
+                  <option value="bottom-right">Bottom Right</option>
                 </select>
               </div>
-
-
+              <div className="flex-1 rounded pb-4">{/* Opacity */}
+                <label className="label">BG Opacity</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  className="w-full"
+                  value={currentArtwork?.style?.bgOpacity || 0}
+                  onChange={(e) => {
+                    setCurrentArtwork(prev => ({
+                      ...prev!,
+                      style: {
+                        ...prev!.style,
+                        bgOpacity: parseFloat(e.target.value)
+                      }
+                    }));
+                  }}
+                />
+                <input
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  className="w-full  bg-gray-200 border-none text-center"
+                  value={currentArtwork?.style?.bgOpacity || 0}
+                  readOnly
+                />
+              </div>
+            </div>
+            <div className="flex space-x-4">
               <div className="flex-1 rounded">
-                <label className=" text-sm font-medium mb-1">Type</label>
+                <label className="label">Title Color</label>
+                <input
+                  type="text"
+                  className="field"
+                  placeholder="white, black, or eg. green-500"
+                  value={currentArtwork?.style?.textColor || ''}
+                  onChange={handleStyleChange}
+                  name="textColor"
+                />
+              </div>
+              <div className="flex-1 rounded">
+                <label className="label">Title Size</label>
                 <select
-                  className="w-full border rounded p-2"
+                  className="field"
+                  value={currentArtwork?.style?.typography?.title?.size || '2xl'}
+                  onChange={handleStyleChange}
+                  name="typography.title.size"
+                >
+                  <option value="xs">Extra Small</option>
+                  <option value="sm">Small</option>
+                  <option value="base">Base</option>
+                  <option value="lg">Large</option>
+                  <option value="xl">Extra Large</option>
+                  <option value="2xl">2XL</option>
+                  <option value="3xl">3XL</option>
+                  <option value="4xl">4XL</option>
+                </select>
+              </div>
+              <div className="flex-1 rounded">
+                <label className="label">Title Weight</label>
+                <select
+                  className="field"
+                  value={currentArtwork?.style?.typography?.title?.weight || 'Medium'}
+                  onChange={handleStyleChange}
+                  name="typography.title.weight"
+                >
+                  <option value="normal">Normal</option>
+                  <option value="medium">Medium</option>
+                  <option value="semibold">Semibold</option>
+                  <option value="bold">Bold</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="text-green-600 mt-6">
+            <label className="text-sm font-medium text-green-600">Description Placement</label>
+              <select
+                className="field"
+                value={currentArtwork?.style?.descriptionPlacement || 'bottom-left'}
+                onChange={(e) => {
+                  setCurrentArtwork(prev => ({
+                    ...prev!,
+                    style: {
+                      ...prev!.style,
+                      descriptionPlacement: e.target.value as any
+                    }
+                  }));
+                }}
+              >
+                <option value="top-left">Top Left</option>
+                <option value="top-center">Top Center</option>
+                <option value="top-right">Top Right</option>
+                <option value="center">Center</option>
+                <option value="bottom-left">Bottom Left</option>
+                <option value="bottom-center">Bottom Center</option>
+                <option value="bottom-right">Bottom Right</option>
+              </select>
+            </div>
+            </div>
+            
+        {/* This spans two columns below the above 2 col (Image and titleGroup) */}
+        
+        
+        <div className="col-span-2 pr-4 text-black">
+          <div className="space-y-4">
+            <div>
+              <label className="label ">Title</label>
+              <input name="title" type="text"
+                value={currentArtwork?.title || ''}
+                onChange={handleInputChange}
+                className="field"
+              />
+            </div>
+            <div>
+              <label className="label">Title Line 2</label>
+              <input
+                type="text"
+                name="titleLine2"
+                value={currentArtwork?.titleLine2 || ''}
+                onChange={handleInputChange}
+                className="field"
+              />
+            </div>
+            <div className="flex space-x-4">
+              <div className="flex-1 rounded">
+                <label className="label">Category</label>
+                <select
+                  className="field"
+                  value={currentArtwork?.category || ''}
+                  onChange={handleInputChange}
+                  name="category"
+                >
+                  <option value={ArtworkCategoryType.drawings}>Drawings</option>
+                  <option value={ArtworkCategoryType.installations}>Installations</option>
+                  <option value={ArtworkCategoryType.paintings}>Paintings</option>
+                  <option value={ArtworkCategoryType.video}>Video</option>
+                </select>
+              </div>
+              <div className="flex-1 rounded">
+                <label className="label">Type</label>
+                <select
+                  className="field"
                   value={currentArtwork?.type || ''}
                   onChange={handleInputChange}
                   name="type"
                 >
                   <option value={ArtworkDisplayType.FullScreen}>Full Screen + Title</option>
-                  <option value={ArtworkDisplayType.FullScreen2}>Full Screen With Description Overlay</option>
                   <option value={ArtworkDisplayType.SplitScreenTextLeft}>Split Screen Text Left</option>
                 </select>
               </div>
             </div>
-
-
-
-              {currentArtwork.type === ArtworkDisplayType.SplitScreenTextLeft && (
+            {currentArtwork?.type === ArtworkDisplayType.SplitScreenTextLeft && (
               <div>
                 <label className="label">Text Width Percentage</label>
                 <select
@@ -484,9 +597,8 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
                   <option value={70}>70%</option>
                 </select>
               </div>
-              )}
-
-              {currentArtwork.type !== ArtworkDisplayType.FullScreen && (
+            )}
+            {currentArtwork?.type !== ArtworkDisplayType.FullScreen && (
               <div>
                 <label className="label">Description</label>
                 <textarea
@@ -497,202 +609,42 @@ const ArtworkManager: React.FC<ArtworkManagerProps> = ({ onClose, preSelectedArt
                   className="field"
                 />
               </div>
-              )}
-
-              {/* Text Placement */}
-              <div>
-                <label className="block text-sm font-bold mb-1">Title</label>
-                <select
-                  className="w-full border rounded p-2"
-                  value={currentArtwork.style?.textPlacement || 'bottom-left'}
-                  onChange={(e) => {
-                    setCurrentArtwork(prev => ({
-                      ...prev!,
-                      style: {
-                        ...prev!.style,
-                        textPlacement: e.target.value as any
-                      }
-                    }));
-                  }}
+            )}
+            <div>
+              <label className="label">Image URL</label>
+              <input
+                type="text"
+                value={currentArtwork?.imageUrl || ''}
+                readOnly
+                className="field"
+              />
+            </div>
+            <div className="flex justify-end space-x-4">
+              {!isNewArtwork && (
+                <button
+                  type="button"
+                  onClick={() => handleDelete(currentArtwork?.id ?? "")}
+                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                 >
-                  <option value="top-left">Top Left</option>
-                  <option value="top-center">Top Center</option>
-                  <option value="top-right">Top Right</option>
-                  <option value="center">Center</option>
-                  <option value="bottom-left">Bottom Left</option>
-                  <option value="bottom-center">Bottom Center</option>
-                  <option value="bottom-right">Bottom Right</option>
-                </select>
-              </div>
-
-              {/* Text Color */}
-              {/* <div>
-                <label className="block text-sm font-medium mb-1">Text Color</label>
-                <input
-                  type="text"
-                  className="w-full border rounded p-2"
-                  placeholder="white, black, or tailwind color (e.g., green-500)"
-                  value={currentArtwork.style?.textColor || ''}
-                  onChange={(e) => {
-                    setCurrentArtwork(prev => ({
-                      ...prev!,
-                      style: {
-                        ...prev!.style,
-                        textColor: e.target.value
-                      }
-                    }));
-                  }}
-                />
-              </div> */}
-
-              {/* Background Opacity */}
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Background Opacity ({currentArtwork.style?.bgOpacity || 0.5})
-                </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  className="w-full"
-                  value={currentArtwork.style?.bgOpacity || 0.5}
-                  onChange={(e) => {
-                    setCurrentArtwork(prev => ({
-                      ...prev!,
-                      style: {
-                        ...prev!.style,
-                        bgOpacity: parseFloat(e.target.value)
-                      }
-                    }));
-                  }}
-                />
-              </div>
-{/* 
-              <div>
-                <label className="block text-sm font-medium mb-1">Title Font Size</label>
-                <select
-                  className="w-full border rounded p-2"
-                  value={currentArtwork?.style?.typography?.title?.size || '2xl'}
-                  onChange={handleStyleChange}
-                  name="typography.title.size" // Correct name for nested property
-                >
-                  <option value="xs">Extra Small</option>
-                  <option value="sm">Small</option>
-                  <option value="base">Base</option>
-                  <option value="lg">Large</option>
-                  <option value="xl">Extra Large</option>
-                  <option value="2xl">2XL</option>
-                  <option value="3xl">3XL</option>
-                  <option value="4xl">4XL</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">Title Font Weight</label>
-                <select
-                  className="w-full border rounded p-2"
-                  value={currentArtwork?.style?.typography?.title?.weight || 'bold'}
-                  onChange={handleStyleChange}
-                  name="typography.title.weight" // Correct name for nested property
-                >
-                  <option value="normal">Normal</option>
-                  <option value="medium">Medium</option>
-                  <option value="semibold">Semibold</option>
-                  <option value="bold">Bold</option>
-                  <option value="extrabold">Extra Bold</option>
-                </select>
-              </div> */}
-
-                <div className="flex space-x-4">
-                  <div className="flex-1  rounded">
-                    <label className="block text-sm font-medium mb-1">Text Color</label>
-                    <input
-                      type="text"
-                      className="field"
-                      placeholder="white, black, or tailwind color (e.g., green-500)"
-                      value={currentArtwork?.style?.textColor || ''}
-                      onChange={handleStyleChange}
-                      name="textColor"
-                    />
-                  </div>
-                  <div className="flex-1  rounded">
-                    <label className="label">Title Font Size</label>
-                    <select
-                      className="field"
-                      // value={currentArtwork?.style?.size || '2xl'}
-                      value={currentArtwork?.style?.typography?.title?.size || '2xl'}
-
-                      onChange={handleStyleChange}
-                      name="typography.title.size" // Correct name for nested property
-                    >
-                      <option value="xs">Extra Small</option>
-                      <option value="sm">Small</option>
-                      <option value="base">Base</option>
-                      <option value="lg">Large</option>
-                      <option value="xl">Extra Large</option>
-                      <option value="2xl">2XL</option>
-                      <option value="3xl">3XL</option>
-                      <option value="4xl">4XL</option>
-                    </select>
-                  </div>
-
-                  <div className="flex-1 rounded">
-                    <label className="label">Title Font Weight</label>
-                    <select
-                      className="field"
-                          value={currentArtwork?.style?.typography?.title?.weight || 'bold'}
-                      onChange={handleStyleChange}
-                      name="typography.title.weight" // Correct name for nested property
-                    >
-                      <option value="normal">Normal</option>
-                      <option value="medium">Medium</option>
-                      <option value="semibold">Semibold</option>
-                      <option value="bold">Bold</option>
-                      <option value="extrabold">Extra Bold</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-          
-              
-              <div>
-                <label className="label">Image URL</label>
-                <input type="text"
-                  value={currentArtwork.imageUrl}
-                  readOnly
-                  className="mt-1 block w-full rounded-md border-black bg-gray-50  px-2 py-1"
-                />
-              </div>
-
-              <div className="flex justify-end space-x-4">
-                {!isNewArtwork && (
-                  <button type="button"
-                    onClick={() => handleDelete(currentArtwork?.id ?? "")}
-                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                )}
-                <button type="button"
-                  onClick={handleSave}
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                >
-                  Save Changes
+                  Delete
                 </button>
-              </div>
+              )}
+              <button
+                type="button"
+                onClick={handleSave}
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              >
+                Save Changes
+              </button>
             </div>
           </div>
-        ) : (
-          <div className="text-center text-gray-500">
-            Select an artwork to edit or create a new one
-          </div>
-        )}
+        </div>
       </div>
     </div>
   </div>
-  </div>
-  );
-};
+);
 
+
+
+};
 export default ArtworkManager;

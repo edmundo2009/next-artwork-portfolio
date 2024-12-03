@@ -176,26 +176,23 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
         className="relative overflow-y-auto"
         style={{ width: `${artwork.textWidthPercentage || 50}%` }}
       >
-        <TextOverlay style={style}>
-          <div>
-            {/* <h2>{artwork.title}</h2> */}
-
-            <h2>{artwork.title}</h2>
-            {artwork.titleLine2 && <h2>{artwork.titleLine2}</h2>}
-
-
-            
-            {markdownContent && (
-              <ReactMarkdown
-                components={MarkdownComponents}
-                remarkPlugins={[remarkGfm]}
-                className="prose max-w-none"
-              >
-                {markdownContent}
-              </ReactMarkdown>
-            )}
-          </div>
-        </TextOverlay>
+      <TextOverlay style={artwork.style}>
+        <div>
+          <h2>{artwork.title}</h2>
+          {artwork.titleLine2 && <h2>{artwork.titleLine2}</h2>}
+        </div>
+      </TextOverlay>
+      <TextOverlay style={{ ...artwork.style, textPlacement: artwork.style?.descriptionPlacement }}>
+        {markdownContent && (
+          <ReactMarkdown
+            components={MarkdownComponents}
+            remarkPlugins={[remarkGfm]}
+            className="prose max-w-none"
+          >
+            {markdownContent}
+          </ReactMarkdown>
+        )}
+      </TextOverlay>
       </div>
       <div
         className="relative"
@@ -203,9 +200,7 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
       >
         <Image
           src={artwork.imageUrl}
-          // alt={artwork.title}
           {...imageProps}
-          // layout="fill" //layout="fill" and objectFit="contain" for responsive image display
           objectFit="contain"
         />
       </div>
@@ -215,8 +210,8 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
   switch (artwork.type) {
     case ArtworkDisplayType.FullScreen:
       return renderFullScreen_Title();
-    case ArtworkDisplayType.FullScreen2:
-      return renderFullScreen_twoTitle();
+    // case ArtworkDisplayType.FullScreen2:
+    //   return renderFullScreen_twoTitle();
     case ArtworkDisplayType.SplitScreenTextLeft:
       return renderSplitScreenTextLeft();
 

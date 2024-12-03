@@ -30,7 +30,6 @@ const TextOverlay: React.FC<TextOverlayProps> = ({ style, children }) => {
   };
 
   const getTextColorClass = (color?: string) => {
-    // Comprehensive color mapping
     const colorMap: { [key: string]: string } = {
       // Basic colors
       'black': 'text-black',
@@ -132,13 +131,15 @@ const TextOverlay: React.FC<TextOverlayProps> = ({ style, children }) => {
     return `${paddingX} ${paddingY} ${marginX} ${marginY}`;
   };
 
-  const positionClasses = getPositionClasses(style?.textPlacement);
+  const titlePositionClasses = getPositionClasses(style?.textPlacement);
+  const descriptionPositionClasses = getPositionClasses(style?.descriptionPlacement);
   const textColorClass = getTextColorClass(style?.textColor);
   const backgroundClasses = getBackgroundClasses(style?.bgOpacity);
   const spacingClasses = getSpacingClasses(style?.spacing);
 
   const classes = [
-    positionClasses,
+    titlePositionClasses,
+    descriptionPositionClasses,
     textColorClass,
     backgroundClasses,
     spacingClasses,

@@ -28,6 +28,9 @@ export interface Artwork {
 
 export interface ArtworkStyle {
   textPlacement?: 'top-left' | 'top-center' | 'top-right' | 'center' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+  descriptionPlacement?: 'top-left' | 'top-center' | 'top-right' |  'center' |  'bottom-left' | 'bottom-center' | 'bottom-right';
+  // descriptionPlacement?: 'top-left' | 'top-center' | 'top-right' | 'middle-left' | 'center' | 'middle-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+
   textColor?: string; // leave empty with ''(quotes) for white, use green-500 for specific color shades
   bgOpacity?: number; //from 0 to 1 in 0.1 increments, like 0.1, 0.2, 0.3, etc
   size?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl'; // Add size property

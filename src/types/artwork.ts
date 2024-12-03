@@ -21,15 +21,17 @@ export interface Artwork {
   titleLine2?: string; // property for the second line
   type: ArtworkDisplayType;
   descriptionPath?: string; // Path to md description
-  style?: ArtworkStyle;
   textWidthPercentage?: number; // interface extension
   description?: string;
+  style?: ArtworkStyle;
 }
 
 export interface ArtworkStyle {
   textPlacement?: 'top-left' | 'top-center' | 'top-right' | 'center' | 'bottom-left' | 'bottom-center' | 'bottom-right';
   textColor?: string; // leave empty with ''(quotes) for white, use green-500 for specific color shades
   bgOpacity?: number; //from 0 to 1 in 0.1 increments, like 0.1, 0.2, 0.3, etc
+  size?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl'; // Add size property
+  weight?: 'thin' | 'extralight' | 'light' | 'normal' | 'medium' | 'semibold' | 'bold' | 'extrabold' | 'black'; // Add weight property
   // granular styling properties
   typography?: {
     title?: {

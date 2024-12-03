@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { Artwork, ArtworkDisplayType, ArtworkStyle} from '@/types/artwork';
 import TextOverlay from './TextOverlay';
 import Image from 'next/image';
+
 interface ArtworkDisplayProps {
   artwork: Artwork;
 }
@@ -132,11 +133,9 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
         {...imageProps}
         className="w-full h-full object-contain"
       />
-      <TextOverlay style={style}>
-        <h2 className="text-2xl font-bold">{artwork.title}</h2>
-        {artwork.titleLine2 && (
-          <h2 className="text-2xl font-bold mt-2">{artwork.titleLine2}</h2>
-        )}
+      <TextOverlay style={artwork.style || defaultStyles[ArtworkDisplayType.FullScreen]}>
+        <h2>{artwork.title}</h2>
+        {artwork.titleLine2 && <h2>{artwork.titleLine2}</h2>}
       </TextOverlay>
     </div>
   );
@@ -179,7 +178,13 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
       >
         <TextOverlay style={style}>
           <div>
+            {/* <h2>{artwork.title}</h2> */}
+
             <h2>{artwork.title}</h2>
+            {artwork.titleLine2 && <h2>{artwork.titleLine2}</h2>}
+
+
+            
             {markdownContent && (
               <ReactMarkdown
                 components={MarkdownComponents}

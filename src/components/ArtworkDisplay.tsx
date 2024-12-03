@@ -133,7 +133,8 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
         {...imageProps}
         className="w-full h-full object-contain"
       />
-      <TextOverlay style={artwork.style || defaultStyles[ArtworkDisplayType.FullScreen]}>
+      <TextOverlay style={artwork.style}>
+      {/* <TextOverlay style={artwork.style || defaultStyles[ArtworkDisplayType.FullScreen]}> */}
         <h2>{artwork.title}</h2>
         {artwork.titleLine2 && <h2>{artwork.titleLine2}</h2>}
       </TextOverlay>
@@ -176,23 +177,21 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
         className="relative overflow-y-auto"
         style={{ width: `${artwork.textWidthPercentage || 50}%` }}
       >
-      <TextOverlay style={artwork.style}>
-        <div>
+        <TextOverlay style={artwork.style}>
           <h2>{artwork.title}</h2>
           {artwork.titleLine2 && <h2>{artwork.titleLine2}</h2>}
-        </div>
-      </TextOverlay>
-      <TextOverlay style={{ ...artwork.style, textPlacement: artwork.style?.descriptionPlacement }}>
+        </TextOverlay>
         {markdownContent && (
-          <ReactMarkdown
-            components={MarkdownComponents}
-            remarkPlugins={[remarkGfm]}
-            className="prose max-w-none"
-          >
-            {markdownContent}
-          </ReactMarkdown>
+          <TextOverlay style={{ ...artwork.style, textPlacement: artwork.style?.descriptionPlacement }}>
+            <ReactMarkdown
+              components={MarkdownComponents}
+              remarkPlugins={[remarkGfm]}
+              className="prose max-w-none"
+            >
+              {markdownContent}
+            </ReactMarkdown>
+          </TextOverlay>
         )}
-      </TextOverlay>
       </div>
       <div
         className="relative"
@@ -206,6 +205,7 @@ const ArtworkDisplay: React.FC<ArtworkDisplayProps> = ({ artwork }) => {
       </div>
     </div>
   );
+
 
   switch (artwork.type) {
     case ArtworkDisplayType.FullScreen:

@@ -5,18 +5,17 @@ export const mockArtworks: Artwork[] = [
     "id": "1",
     "category": 3,
     "imageUrl": "/artwork/3/1.png",
-    "title": "1",
+    "title": "asdfasdf",
     "titleLine2": "2",
-    "type": 3,
-    "descriptionPath": "/descriptions/1.md",
-    "textWidthPercentage": 50,
+    "type": 1,
+    "descriptionPath": "/descriptions/asdfasdf.md",
     "style": {
-      "textPlacement": "bottom-left",
-      "bgOpacity": 0.6,
+      "textPlacement": "top-left",
+      "bgOpacity": 0.3,
       "typography": {
         "title": {
-          "weight": "medium",
-          "size": "lg"
+          "weight": "semibold",
+          "size": "sm"
         }
       },
       "textColor": "red",

@@ -13,19 +13,48 @@ const TextOverlay: React.FC<TextOverlayProps> = ({ style, children }) => {
       case 'top-left':
         return 'top-4 left-4';
       case 'top-center':
-        return 'top-4 left-1/2 -translate-x-1/2';
+        return 'top-4 left-1/2 transform -translate-x-1/2';
       case 'top-right':
         return 'top-4 right-4';
+      case 'middle-left':
+        return 'top-1/2 left-4 transform -translate-y-1/2';
+      case 'middle-right':
+        return 'top-1/2 right-4 transform -translate-y-1/2';
       case 'center':
-        return 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2';
+        return 'top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2';
       case 'bottom-left':
         return 'bottom-4 left-4';
       case 'bottom-center':
-        return 'bottom-4 left-1/2 -translate-x-1/2';
+        return 'bottom-4 left-1/2 transform -translate-x-1/2';
       case 'bottom-right':
         return 'bottom-4 right-4';
       default:
+        return '';
+    }
+  };
+
+  const getBackgroundPositionClasses = (placement?: string) => {
+    switch (placement) {
+      case 'top-left':
+        return 'top-4 left-4';
+      case 'top-center':
+        return 'top-4 left-1/2 transform -translate-x-1/2';
+      case 'top-right':
+        return 'top-4 right-4';
+      case 'middle-left':
+        return 'top-1/2 left-4 transform -translate-y-1/2';
+      case 'middle-right':
+        return 'top-1/2 right-4 transform -translate-y-1/2';
+      case 'center':
+        return 'top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2';
+      case 'bottom-left':
         return 'bottom-4 left-4';
+      case 'bottom-center':
+        return 'bottom-4 left-1/2 transform -translate-x-1/2';
+      case 'bottom-right':
+        return 'bottom-4 right-4';
+      default:
+        return '';
     }
   };
 
@@ -96,11 +125,7 @@ const TextOverlay: React.FC<TextOverlayProps> = ({ style, children }) => {
   };
 
   const getTitleClasses = (typography?: ArtworkStyle['typography']) => {
-    // console.log('Typography title size:', typography?.title?.size);
-
     const titleSize = typography?.title?.size ? `text-${typography.title.size}` : 'text-2xl';
-    // console.log('Generated title size class:', titleSize);
-
     const titleWeight = typography?.title?.weight ? `font-${typography.title.weight}` : 'font-bold';
     const titleMargin = typography?.title?.marginBottom !== undefined
       ? `mb-${typography.title.marginBottom}`
@@ -131,17 +156,23 @@ const TextOverlay: React.FC<TextOverlayProps> = ({ style, children }) => {
     return `${paddingX} ${paddingY} ${marginX} ${marginY}`;
   };
 
+
+
+
+
+
   const titlePositionClasses = getPositionClasses(style?.textPlacement);
   const descriptionPositionClasses = getPositionClasses(style?.descriptionPlacement);
   const textColorClass = getTextColorClass(style?.textColor);
-  const backgroundClasses = getBackgroundClasses(style?.bgOpacity);
+  const titleBackgroundClasses = `${getBackgroundClasses(style?.bgOpacity)} ${getBackgroundPositionClasses(style?.textPlacement)}`;
+  const descriptionBackgroundClasses = `${getBackgroundClasses(style?.bgOpacity)} ${getBackgroundPositionClasses(style?.descriptionPlacement)}`;
   const spacingClasses = getSpacingClasses(style?.spacing);
 
   const classes = [
     titlePositionClasses,
     descriptionPositionClasses,
     textColorClass,
-    backgroundClasses,
+    // backgroundClasses,
     spacingClasses,
     'absolute'
   ].join(' ');
@@ -172,36 +203,43 @@ const TextOverlay: React.FC<TextOverlayProps> = ({ style, children }) => {
     );
   };
 
+
   const processChildren = (childrenToProcess: ReactNode): ReactNode => {
     return Children.map(childrenToProcess, (child) => {
       if (!isValidElement(child)) return child;
 
-      // Handle the first level of children
       switch (child.type) {
         case 'h2':
-          return enhanceClassName(child, getTitleClasses(style?.typography));
-
+          return (
+            <div className={`${titleBackgroundClasses} p-2 rounded`}>
+              {enhanceClassName(child, getTitleClasses(style?.typography))}
+            </div>
+          );
         case 'div':
           return React.cloneElement(child, {},
-            // Process grandchildren
             Children.map(child.props.children, (grandChild) => {
               if (!isValidElement(grandChild)) return grandChild;
 
               switch (grandChild.type) {
                 case 'h2':
-                  return enhanceClassName(grandChild, getTitleClasses(style?.typography));
-
+                  return (
+                    <div className={`${titleBackgroundClasses} p-2 rounded`}>
+                      {enhanceClassName(grandChild, getTitleClasses(style?.typography))}
+                    </div>
+                  );
                 case 'p':
                 case 'span':
                 case 'div':
-                  return enhanceClassName(grandChild, getDescriptionClasses(style?.typography));
-
+                  return (
+                    <div className={`${descriptionBackgroundClasses} p-2 rounded`}>
+                      {enhanceClassName(grandChild, getDescriptionClasses(style?.typography))}
+                    </div>
+                  );
                 default:
                   return grandChild;
               }
             })
           );
-
         default:
           return child;
       }
